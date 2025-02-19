@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Track Tom",
+    "slug": "tracktom-pcsagri",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logot.jpg",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logot.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pcsagri.tracktomTest"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logot.jpg",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.pcsagri.tracktomTest"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "assetBundlePatterns": [
+      "assets/*"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "532c367f-4920-4691-a1a2-347676dc90bc"
+      }
+    }
+  }
+}
