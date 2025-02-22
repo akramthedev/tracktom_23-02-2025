@@ -441,26 +441,26 @@ export default function AjouterCalcul() {
                     {
                         isLoading ? 
                         <View style={styles.skeletonContainer}>   
-                                                    {[...Array(4)].map((_, index) => (
-                                                        <Animated.View
-                                                            key={index}
-                                                            style={[
-                                                                styles.skeletonRow,  
-                                                                { 
-                                                                    backgroundColor: skeletonBackground,  
-                                                                    width: index === 0 ? '100%' 
-                                                                    : index === 1 ? '100%' 
-                                                                    : index === 2 ? '100%'
-                                                                    : index === 3 ? '100%'
-                                                                    : index === 4 ? '100%'
-                                                                    : index === 5 ? '100%'
-                                                                    : index === 6 ? '100%'
-                                                                    : index === 7 ? '100%' : "100%"
-                                                                },
-                                                            ]}
-                                                        />
-                                                    ))}
-                                                </View>
+                            {[...Array(4)].map((_, index) => (
+                                <Animated.View
+                                    key={index}
+                                    style={[
+                                        styles.skeletonRow,  
+                                        { 
+                                            backgroundColor: skeletonBackground,  
+                                            width: index === 0 ? '100%' 
+                                            : index === 1 ? '100%' 
+                                            : index === 2 ? '100%'
+                                            : index === 3 ? '100%'
+                                            : index === 4 ? '100%'
+                                            : index === 5 ? '100%'
+                                            : index === 6 ? '100%'
+                                            : index === 7 ? '100%' : "100%"
+                                        },
+                                    ]}
+                                />
+                            ))}
+                        </View>
                         :
                         <>
                         <View style={styles.formContainer}>
@@ -572,7 +572,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        paddingTop: 30,
         paddingBottom: 0,
         paddingHorizontal: 20,
     },
