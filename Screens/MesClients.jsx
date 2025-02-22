@@ -13,7 +13,6 @@ import PopUpNavigate from "../Components/PopUpNavigate";
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useFonts } from 'expo-font';
-import DATA from "../Helpers/data_client";
 import axios from "axios";
 import {ENDPOINT_URL} from "../App";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -56,7 +55,6 @@ export default function MesClients({ route }) {
                     setAdmins(resp.data.admins);
                     setCountNewUser(resp.data.newUser);
                 }
-                await new Promise(resolve => setTimeout(resolve, 200));
             }catch(e){
                   console.log("error custmore ===>",e);
                   setAdmins([]);
@@ -151,7 +149,35 @@ export default function MesClients({ route }) {
             />
 
             <View style={styles.container}>
+
                 <View style={styles.header}>
+
+
+                {
+                          admins && admins.length >= 1 && 
+                          <View
+                          style={{
+                            position: "absolute",
+                            top: 58,
+                            left: screenWidth / 2 - 109,  
+                            width: 200,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "center",
+                              fontFamily: "Inter",
+                              fontSize: 13,
+                              color: "gray",
+                            }}
+                          >
+                            Total : {admins.length}
+                          </Text>
+                        </View>
+                        }
+
+
                         <TouchableOpacity 
                             style={styles.returnButton}
                             onPress={()=>{
@@ -165,13 +191,16 @@ export default function MesClients({ route }) {
                         onPress={() => setIsPopupVisible(!isPopupVisible)}
                         style={styles.elipsisButton}
                     >
-                        <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                        <Ionicons name="menu" size={24} color="#141414" />
                     </TouchableOpacity>
                 </View>
 
                 {
                     !isLoading && 
-                    <View
+                    <>
+                    {
+                        countNewUser !== 0 && countNewUser && 
+                        <View
                         style={styles.husrfousfhuow}
                     >
                         <TouchableOpacity 
@@ -189,10 +218,12 @@ export default function MesClients({ route }) {
                             <Text
                             style={styles.zishdwfisudhwText}
                             >
-                            {countNewUser}&nbsp;&nbsp;Nouvelles Demandes
+                            {countNewUser}&nbsp;&nbsp;Demandes d'inscription
                             </Text>
                         </TouchableOpacity>
                     </View>
+                    } 
+                    </>
                 }
 
                 {isLoading ? (
@@ -223,13 +254,32 @@ export default function MesClients({ route }) {
                       ))}
                   </View>
               ) : (
-                  <FlatList
-                      data={admins}
-                      renderItem={renderItem}
-                      keyExtractor={(item) => item.id}
-                      contentContainerStyle={styles.listContainer}
-                      showsVerticalScrollIndicator={false}
-                  />
+
+                <>
+                            {
+                              admins.length === 0 ? 
+                              <View style={{
+                                        flex : 0.85, 
+                                        backgroundColor : "white", 
+                                        alignItems : "center", 
+                                        justifyContent : "center", 
+                                      }} >
+                                        <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
+                                          Aucune donnée
+                                        </Text>
+                              </View>  
+                              :
+                              <FlatList
+                              data={admins}
+                              renderItem={renderItem}
+                              keyExtractor={(item) => item.id}
+                              contentContainerStyle={styles.listContainer}
+                              showsVerticalScrollIndicator={false}
+                          />
+                            }
+                            </>
+
+                  
               )}
 
               
@@ -251,6 +301,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingVertical: 20,
+        position : "relative"
     },
     addButton: {
         width: 30,
@@ -272,11 +323,13 @@ const styles = StyleSheet.create({
     },
     card: {
         borderRadius: 0,
-        textAlign: 'center',
+        textAlign: "center",
         height: 'auto',
         flexDirection: 'row',
+        justifyContent : "flex-start",
         marginBottom: 34,
         shadowColor: 'gray',
+        overflow : "hidden"
     },
     infosContainer: {
         width: 'auto',
@@ -284,12 +337,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     textInfos1: {
-        width: '100%',
-        textAlign: 'left',
-        fontFamily: 'Inter',
-        fontWeight : "bold",
-        color :"#313131",
-        fontSize: 16,
+        width : "100%", 
+        textAlign : "left", 
+        fontFamily : 'Inter',
+        fontSize : 17,
+      fontWeight : "bold",
+      color :"rgb(78, 78, 78)" ,
     },
     textInfos2: {
         width: '100%',
@@ -299,13 +352,13 @@ const styles = StyleSheet.create({
         color: 'gray',
     },
     imageContainer: {
-        height: 58,
-        width: 58,
+        height: 63,
+        width: 63,
         marginRight: 13,
     },
     imageInsider: {
-        height: 58,
-        width: 58,
+        height: 63,
+        width: 63,
         borderRadius: 100,
         objectFit: 'cover',
     },
@@ -384,10 +437,11 @@ textSkeletonContainer: {
       width : "100%",
       height : 50,
       borderRadius : 9,
+      marginTop : 8,
       backgroundColor : "#BE2929", 
       alignItems : "center",
       justifyContent : "center", 
-      flexDirection : "row"
+      flexDirection : "row", 
     },    
     zishdwfisudhwText : {
       fontFamily: 'Inter',

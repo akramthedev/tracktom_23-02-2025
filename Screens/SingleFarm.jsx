@@ -18,7 +18,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ENDPOINT_URL} from "../App";
 import { useFonts } from 'expo-font';
 
-
+function formateDate(isoString) {
+    const date = new Date(isoString);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+    const year = date.getUTCFullYear();
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    let hoursX = parseInt(hours)+1;
+    
+    return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
+  }
+  
 
 
 export default function SingleFarm({route}) {
@@ -37,13 +48,10 @@ export default function SingleFarm({route}) {
     const skeletonAnimation = useRef(new Animated.Value(0)).current;
     const [isModifyClicked, setisModifyClicked] = useState(false);
     const [isDeleteClicked, setisDeleteClicked] = useState(false);
-
-
+    const [createdAt, setCreatedAt] = useState(null);
     const [serres , setSerres] = useState([]);
     const [fermeName , setFermeName ] = useState(null);
-    const [surface , setSurface] = useState(null);
-    const [commune , setCommune ] = useState(null);
-
+    const [commune,setcommune] = useState("");
  
         
 
@@ -78,9 +86,9 @@ export default function SingleFarm({route}) {
           
                         if (resp.status === 200) {
                             setFermeName(resp.data.fermes.nom_ferme);
-                            setCommune(resp.data.fermes.commune);
-                            setSurface(resp.data.fermes.surface);
+                            setCreatedAt(resp.data.fermes.created_at);
                             setSerres(resp.data.fermes.serres);
+                            setcommune(resp.data.fermes.commune);
                         }
                         
                          
@@ -89,7 +97,7 @@ export default function SingleFarm({route}) {
                     } finally {
                         const timer = setTimeout(() => {
                             setIsLoading(false);
-                        }, 200);
+                        }, 167);
           
                         return () => clearTimeout(timer);
                     }
@@ -112,8 +120,7 @@ export default function SingleFarm({route}) {
             try{
               let data = {
                 nom_ferme : fermeName, 
-                surface : parseInt(surface) , 
-                commune: commune 
+                commune : commune ? commune : "--"
               }
               
               const resp = await axios.put(`${ENDPOINT_URL}fermes/${id}`, data, {
@@ -153,7 +160,8 @@ export default function SingleFarm({route}) {
                     id: item.id,
                     created_at : item.created_at, 
                     nameSerre : item.name, 
-                    superficie : item.superficie
+                    poids_fruit : item.poids_fruit,
+                    nbr_tiger : item.nbr_tiger,
                 })
 
             }}
@@ -217,7 +225,7 @@ export default function SingleFarm({route}) {
                         Confirmer la suppression
                         </Text>
                         <Text style={styles.modalMessage}>
-                        Cette action supprimera l'élément définitivement.
+                        Cette action supprimera la ferme définitivement.
                         </Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
@@ -327,7 +335,7 @@ export default function SingleFarm({route}) {
                         style={styles.elipsisButton}
                         onPress={() => setIsPopupVisible(!isPopupVisible)}
                     >
-                        <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                        <Ionicons name="menu" size={24} color="#141414" />
                     </TouchableOpacity>
                 </View>
 
@@ -417,37 +425,27 @@ export default function SingleFarm({route}) {
                                         />
                                     }
                             </View>
+
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>Superficie :</Text>
+                                <Text style={styles.TitleLabel}>Commune :</Text>
                                 {
                                         !isModifyClicked ? 
-                                        <Text style={styles.value}>{surface}&nbsp;Hectares</Text>
+                                        <Text style={styles.value}>{commune ? commune : "--"}</Text>
                                         :
                                         <TextInput
                                             style={styles.input}
-                                            placeholder="Nombre de Hectare..."
-                                            value={surface}
+                                            placeholder="Entrez la commune..."
+                                            value={commune}
                                             onChangeText={(text) => {
-                                                setSurface(text);  
+                                                setcommune(text);  
                                             }}
                                         />
                                     }
                             </View>
+                            
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>Localisation :</Text>
-                                {
-                                        !isModifyClicked ? 
-                                        <Text style={styles.value}>{commune}</Text>
-                                        :
-                                        <TextInput
-                                            style={styles.input}
-                                            placeholder="Entrez la superficie..."
-                                            value={commune}
-                                            onChangeText={(text) => {
-                                                setCommune(text);  
-                                            }}
-                                        />
-                                    }
+                                <Text style={styles.TitleLabel}>Créée le :</Text>
+                                <Text style={styles.value}>{createdAt ? formateDate(createdAt) : "--"}</Text>
                             </View>
                         </View>
                         
@@ -708,7 +706,8 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontFamily : 'Inter',
-        fontSize: 17,
+        fontSize: 18,
+        fontWeight : "bold",
         color: '#141414',
         marginBottom: 10,
     },

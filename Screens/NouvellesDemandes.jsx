@@ -22,6 +22,22 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 import DATA from "../Helpers/data_demandes";
 import {ENDPOINT_URL} from "../App";
 
+
+
+ 
+function formatDate(isoString) {
+  const date = new Date(isoString);
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+  const year = date.getUTCFullYear();
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  let hoursX = parseInt(hours)+1;
+  
+  return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
+}
+
+
 export default function NouvellesDemandes({ route }) {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(true); // Loading state
@@ -51,13 +67,10 @@ export default function NouvellesDemandes({ route }) {
                   'Authorization': `Bearer ${token}`
                 }
               });
-              console.log("resp custmore ===>" ,resp);
               if(resp.status === 200){
                   console.log("All custmore ===>",resp.data);
                   setNewUsers(resp.data.admins);
-
               }
-              await new Promise(resolve => setTimeout(resolve, 200));
           }catch(e){
                 console.log("error custmore ===>",e);
                 setNewUsers([]);
@@ -96,28 +109,16 @@ export default function NouvellesDemandes({ route }) {
               email : item.email,
               entreprise : item.entreprise,
               telephone : item.telephone,
-              created_at : new Date(item.created_at).toDateString() !==
-              new Date().toDateString()
-              ? new Date(item.created_at).toLocaleDateString()
-              : new Date(item.created_at)
-              .toLocaleTimeString([], { hour12: false })
-              .slice(0, -3),
+              created_at : item.created_at
             });
           }}
           style={styles.card3s}
           key={item.id}
         >
           <View style={styles.infosContainer}>
-            <Text style={styles.textInfos1}>&nbsp;&nbsp;{item.name}</Text>
-            <Text style={styles.textInfos2}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{item.email}</Text>
-            <Text style={styles.textInfos3}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-              new Date(item.created_at).toDateString() !==
-              new Date().toDateString()
-              ? new Date(item.created_at).toLocaleDateString()
-              : new Date(item.created_at)
-              .toLocaleTimeString([], { hour12: false })
-              .slice(0, -3)
-            }</Text>
+            <Text style={styles.textInfos1}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{item.name}</Text>
+            <Text style={styles.textInfos2}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{item.email}</Text>
+            <Text style={styles.textInfos3}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{formatDate(item.created_at)}</Text>
           </View>
           <View style={styles.carretRight}>
             <Ionicons name="chevron-forward" size={20} color="gray" />
@@ -140,18 +141,47 @@ export default function NouvellesDemandes({ route }) {
 
         <View style={styles.container}>
           <View style={styles.header}>
+
+
+
+
+            {
+                                                newUsers && newUsers.length >= 1 && 
+                                                <View
+                                                style={{
+                                                  position: "absolute",
+                                                  top: 58,
+                                                  left: screenWidth / 2 - 109,  
+                                                  width: 200,
+                                                  alignItems: "center",
+                                                }}
+                                              >
+                                                <Text
+                                                  style={{
+                                                    textAlign: "center",
+                                                    fontFamily: "Inter",
+                                                    fontSize: 13,
+                                                    color: "gray",
+                                                  }}
+                                                >
+                                                  Total : {newUsers.length}
+                                                </Text>
+                                              </View>
+                                              }
+
+
             <TouchableOpacity
               style={styles.returnButton}
               onPress={() => navigation.goBack()}
             >
               <Ionicons name="chevron-back" size={24} color="#141414" />
             </TouchableOpacity>
-            <Text style={styles.title}>Nouvelles Demandes</Text>
+            <Text style={styles.title}>Demandes d'inscription</Text>
             <TouchableOpacity 
               onPress={() => setIsPopupVisible(!isPopupVisible)}
               style={styles.elipsisButton}
             >
-              <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+              <Ionicons name="menu" size={24} color="#141414" />
             </TouchableOpacity>
           </View>
 
@@ -183,13 +213,35 @@ export default function NouvellesDemandes({ route }) {
               ))}
             </View>
           ) : (
-            <FlatList
+
+
+
+
+            <>
+                                        {
+                                          newUsers.length === 0 ? 
+                                          <View style={{
+                                                    flex : 0.85, 
+                                                    backgroundColor : "white", 
+                                                    alignItems : "center", 
+                                                    justifyContent : "center", 
+                                                  }} >
+                                                    <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
+                                                      Aucune donnée
+                                                    </Text>
+                                          </View>  
+                                          :
+                                          <FlatList
               data={newUsers}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               contentContainerStyle={styles.listContainer}
               showsVerticalScrollIndicator={false}
             />
+                                        }
+                                        </>
+
+             
           )}
         </View>
       </>
@@ -209,6 +261,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       paddingHorizontal: 20,
       paddingVertical: 20,
+      position : "relative"
     },
    
     title: {

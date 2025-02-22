@@ -17,10 +17,19 @@ import {ENDPOINT_URL} from "../App";
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
+import { Keyboard } from 'react-native';
+
+
+
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function AjouterCalcul() {
+
+
+
+        const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+    
 
     const navigation = useNavigation();
     const [selectedFarm, setSelectedFarm] = useState(null);
@@ -37,6 +46,9 @@ export default function AjouterCalcul() {
     const [textUpload , setTestUpload ] = useState(null);
     const [filteredSerres, setFilteredSerres] = useState([]);
     const [allSerre , setAllSerre] = useState([]);
+
+
+    const [Nombre__Y , setNombre__Y] = useState("");
 
 
     const [fontsLoaded] = useFonts({
@@ -101,7 +113,7 @@ export default function AjouterCalcul() {
                             setAllSerre(extractedSerres);
                          }
             
-                        await new Promise(resolve => setTimeout(resolve, 123));
+                        await new Promise(resolve => setTimeout(resolve, 12));
                     } catch (e) {
                     } finally {
                         setisLoading(false);
@@ -114,6 +126,8 @@ export default function AjouterCalcul() {
 
    
     const selectVideo = async () => {
+
+        setIsKeyboardVisible(false);
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert('Permission Requise', 'Accès à la galerie requis pour sélectionner une vidéo.');
@@ -147,6 +161,8 @@ export default function AjouterCalcul() {
 
     // Function to handle taking a video
     const takeVideo = async () => {
+        setIsKeyboardVisible(false);
+
         console.log("run takeVideo ======>");
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -183,18 +199,25 @@ export default function AjouterCalcul() {
 
     const uploadVideoInChunks = async () => {
         
+        setProgressUpload(0);
+
         if (!videoUri){
-            Alert.alert("Veuillez sélectionner une vidéo pour continuer...");            
+            Alert.alert("Le champ vidéo est obligatoire.");            
             return;
         }
 
         if (!selectedFarm){
-            Alert.alert("Veuillez sélectionner une ferme pour continuer...");            
+            Alert.alert("Le champ Ferme est obligatoire.");            
             return;
         }
 
         if (!selectedGreenhouse){
-            Alert.alert("Veuillez sélectionner une serre pour continuer...");            
+            Alert.alert("Le champ Serre est obligatoire.");            
+            return;
+        }
+
+        if (!Nombre__Y || Nombre__Y === ""){
+            Alert.alert("Le champ Nombre de mètres est obligatoire.");            
             return;
         }
 
@@ -203,7 +226,7 @@ export default function AjouterCalcul() {
         const token = await AsyncStorage.getItem('Token');
         
       
-        const CHUNK_SIZE = 20 * 1024 * 1024; // 20MB chunk size
+        const CHUNK_SIZE = 20 * 1024 * 1024;  
       
         try {
           const fileInfo = await FileSystem.getInfoAsync(videoUri);
@@ -229,7 +252,7 @@ export default function AjouterCalcul() {
             formData.append('fileName', fileName);
             formData.append('ferme_id', selectedFarm);
             formData.append('serre_id', selectedGreenhouse);
-            formData.append('superficie', nombreMetre);
+            formData.append('superficie', Nombre__Y);
       
             // Send chunk to the server with progress tracking
             await axios.post(`${ENDPOINT_URL}upload`, formData, {
@@ -252,15 +275,15 @@ export default function AjouterCalcul() {
             chunkIndex++;
           }
       
-          setProgressUpload(100);
-          startWebSocketTracking();
+          await startWebSocketTracking();
           setSelectedFarm(null);
           setSelectedGreenhouse(null);
           setVideoInfo(null);
           setVideoUri(null);
           setnombreMetre(0);
+          setNombre__Y(0);
           setProgressUpload(0);
-          navigation.navigate("MesCalculs");
+
           
         } catch (error) {
           setLoading(false);
@@ -270,9 +293,9 @@ export default function AjouterCalcul() {
       };
       
 
-    const startWebSocketTracking = () => {
+    const startWebSocketTracking = async () => {
         setLoading(true);
-        setTestUpload("Traitement des données en cours...");
+        setTestUpload("Analyse des données en cours...");
         setProgressUpload(0);
 
         let fileName = videoUri.split('/').pop();
@@ -297,12 +320,14 @@ export default function AjouterCalcul() {
           if (percentage === 100) {
             setLoading(false);
             ws.close();
+            navigation.navigate("MesCalculs");
           }
         };
     
         ws.onerror = (error) => {
             setLoading(false);
-          console.error('WebSocket error:', error.message);
+            
+            console.error('WebSocket error:', error.message);
         };
     
         ws.onclose = () => {
@@ -315,7 +340,30 @@ export default function AjouterCalcul() {
    
 
 
+      useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setIsKeyboardVisible(true);
+            }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setIsKeyboardVisible(false);
+            }
+        );
+    
+        // Clean up listeners on unmount
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
+    }, []);
 
+
+
+    
     
     if (!fontsLoaded) {
         return null;
@@ -345,7 +393,7 @@ export default function AjouterCalcul() {
                             onPress={() => setIsPopupVisible(!isPopupVisible)}
                             style={styles.elipsisButton}
                         >                    
-                            <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                            <Ionicons name="menu" size={24} color="#141414" />
                         </TouchableOpacity>
                     </View>
 
@@ -354,10 +402,14 @@ export default function AjouterCalcul() {
                             color : "gray", 
                             marginBottom : 6
                         }}>{textUpload}</Text>
+
                         <Text style={{
                             color : "gray", 
-                            marginBottom : 6
-                        }}>Cela pourrait prendre un moment.</Text>
+                            marginBottom : 6, 
+                            textAlign : "center"
+                        }}>
+                            Cela peut prendre un peu de temps
+                        </Text>
                         <View style={styles.progressContainer}>
                             <View style={{height:15 , width:'100%',borderColor:"#eee",borderStyle:"solid",borderWidth:1,position:"relative"}}>
                                 <View style={{height:13 , backgroundColor:"#BE2929" ,width:`${progressUpload} %`,position:"absolute"}}></View>
@@ -382,7 +434,7 @@ export default function AjouterCalcul() {
                             onPress={() => setIsPopupVisible(!isPopupVisible)}
                             style={styles.elipsisButton}
                         >                    
-                            <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                            <Ionicons name="menu" size={24} color="#141414" />
                         </TouchableOpacity>
                     </View>
 
@@ -413,46 +465,61 @@ export default function AjouterCalcul() {
                         <>
                         <View style={styles.formContainer}>
 
-                            <Text style={styles.label}>Ferme <Text style={styles.required}>*</Text></Text>
-                                                            
-                                                            <View style={styles.pickerContainer}>
-                                                                <Picker
-                                                                    disabled={isLoading}
-                                                                    selectedValue={selectedFarm}
-                                                                    onValueChange={(itemValue) => {
-                                                                        setSelectedFarm(itemValue); // Store the farm id
-                                                                        const fermeChoisie = allFermes.find(f => f.id === itemValue);
-                                                                        setFilteredSerres(fermeChoisie ? allSerre.filter(serre => serre.fermeId === fermeChoisie.id) : []);
-                                                                    }}
-                                                                    style={styles.picker}
-                                                                >
-                                                                    <Picker.Item label="Sélectionner une ferme..." value={null} />
-                                                                    {allFermes.map((item) => (
-                                                                        <Picker.Item key={item.id} label={item.nom_ferme} value={item.id} /> 
-                                                                    ))}
-                                                                </Picker>
-                                                            </View>
+                        <Text style={styles.label}>Ferme <Text style={styles.required}>*</Text></Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                disabled={isLoading}
+                                selectedValue={selectedFarm}
+                                onValueChange={(itemValue) => {
+                                    setSelectedFarm(itemValue); // Store the farm id
+                                    const fermeChoisie = allFermes.find(f => f.id === itemValue);
+                                    setFilteredSerres(fermeChoisie ? allSerre.filter(serre => serre.fermeId === fermeChoisie.id) : []);
+                                }}
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="Sélectionner une ferme..." value={null} />
+                                {allFermes.map((item) => (
+                                    <Picker.Item key={item.id} label={item.nom_ferme} value={item.id} /> 
+                                ))}
+                            </Picker>
+                        </View>
                                 
-                                                            <Text style={styles.label}>Serre <Text style={styles.required}>*</Text></Text>
-                                                            <View style={styles.pickerContainer}>
-                                                                <Picker
-                                                                    disabled={isLoading}
-                                                                    selectedValue={selectedGreenhouse}
-                                                                    onValueChange={(itemValue) => setSelectedGreenhouse(itemValue)}
-                                                                    style={styles.picker}
-                                                                >
-                                                                    <Picker.Item label="Sélectionner une serre..." value={null} />
-                                                                    {filteredSerres.length > 0 && (
-                                                                        filteredSerres.map((item) => (
-                                                                            <Picker.Item key={item.id} label={item.nom} value={item.id} />
-                                                                        ))
-                                                                    )}
-                                                                </Picker>
-                                                            </View>
 
 
- 
+                        <Text style={styles.label}>Serre <Text style={styles.required}>*</Text></Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                disabled={isLoading}
+                                selectedValue={selectedGreenhouse}
+                                onValueChange={(itemValue) => setSelectedGreenhouse(itemValue)}
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="Sélectionner une serre..." value={null} />
+                                {filteredSerres.length > 0 && (
+                                    filteredSerres.map((item) => (
+                                        <Picker.Item key={item.id} label={item.nom} value={item.id} />
+                                    ))
+                                )}
+                            </Picker>
+                        </View>
 
+
+
+                        <Text style={styles.label}>Nombre de mètres<Text style={styles.required}>&nbsp;*</Text></Text>
+
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Entrez le nombre de mètres linéaires... "
+                                keyboardType="numeric" 
+                                value={Nombre__Y.toString()}  
+                                onChangeText={(text) => {
+                                    if (/^\d*$/.test(text)) {  
+                                    setNombre__Y(text); 
+                                    } else {
+                                    Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                                    }
+                                }}
+                            />
 
 
                             <Text style={styles.label}>
@@ -483,10 +550,13 @@ export default function AjouterCalcul() {
 
                             </View>
 
-                            <TouchableOpacity style={styles.createButton} onPress={uploadVideoInChunks}>
-                                <Ionicons name="add" size={18} color="#fff" />
-                                <Text style={styles.createButtonText}>Créer le nouveau calcul</Text>
-                            </TouchableOpacity>
+                            {
+                                !isKeyboardVisible && 
+                                <TouchableOpacity style={styles.createButton} onPress={uploadVideoInChunks}>
+                                    <Ionicons name="add" size={18} color="#fff" />
+                                    <Text style={styles.createButtonText}>Créer le nouveau calcul</Text>
+                                </TouchableOpacity>
+                            }
                         </>
                     }
                     

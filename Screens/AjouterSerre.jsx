@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -13,6 +13,7 @@ import {ENDPOINT_URL} from "../App";
 import axios from "axios";   
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
+import { Keyboard } from 'react-native';
 
 
 
@@ -30,10 +31,42 @@ export default function AjouterSerre({route}) {
   
 
 
+
+           
+    
+        const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+    
+        useEffect(() => {
+            const keyboardDidShowListener = Keyboard.addListener(
+                'keyboardDidShow',
+                () => {
+                    setIsKeyboardVisible(true);
+                }
+            );
+            const keyboardDidHideListener = Keyboard.addListener(
+                'keyboardDidHide',
+                () => {
+                    setIsKeyboardVisible(false);
+                }
+            );
+        
+            // Clean up listeners on unmount
+            return () => {
+                keyboardDidHideListener.remove();
+                keyboardDidShowListener.remove();
+            };
+        }, []);
+    
+        
+
+
+
     const navigation = useNavigation();
     const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const [nombreMetre,setnombreMetre] = useState(0);
     const [NameSerre,setNameSerre] = useState("");
+    const [Nombre_Tiges_Total,setNombre_Tiges_Total] = useState("");
+    const [PoidsMoyen,setPoidsMoyen] = useState("");
+
     const { idFerme } = route.params;
     const [isLoading,setloading] = useState(false);
  
@@ -43,11 +76,31 @@ export default function AjouterSerre({route}) {
 
 
 
-        const handleSubmit = async () => {
+    const handleSubmit = async () => {
+
+        let NTT = 0;
+        let PM = 0;
 
         if (!NameSerre) {
-            Alert.alert("Le champs nom de serre ne peux pas etres vide.");
+            Alert.alert("Le nom de la serre est obligatoire.");
             return;
+        }
+
+
+
+        if(Nombre_Tiges_Total === ""){
+            NTT = 1;  
+        }
+        else{
+            NTT = parseInt(Nombre_Tiges_Total);
+        }
+
+
+        if(PoidsMoyen === ""){
+            PM = 1;  
+        }
+        else{
+            PM = parseFloat(PoidsMoyen);
         }
 
         try{
@@ -56,8 +109,9 @@ export default function AjouterSerre({route}) {
 
             let data = {
                 name : NameSerre, 
-                superficie : parseInt(nombreMetre), 
-                ferme_id : idFerme
+                ferme_id : idFerme, 
+                nbr_tiger : NTT, 
+                poids_fruit : PM
             }
 
             console.log("data" , data);
@@ -70,6 +124,9 @@ export default function AjouterSerre({route}) {
             console.log("resp Serre ===>" ,resp);
             if(resp.status === 201){
                 console.log(resp.data);
+                setNameSerre("");
+                setNombre_Tiges_Total("");
+                setPoidsMoyen("");
                 setloading(false);
                 navigation.goBack();
             }
@@ -136,7 +193,7 @@ export default function AjouterSerre({route}) {
                     onPress={() => setIsPopupVisible(!isPopupVisible)}
                     style={styles.elipsisButton}
                 >                    
-                    <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                    <Ionicons name="menu" size={24} color="#141414" />
                 </TouchableOpacity>
             </View>
 
@@ -144,44 +201,85 @@ export default function AjouterSerre({route}) {
             <View style={styles.formContainer}>
 
                 <Text style={styles.label}>
-                    Appelation&nbsp;<Text style={styles.highlight} >*</Text>
+                    Nom&nbsp;<Text style={styles.highlight} >*</Text>
                 </Text>
                 <TextInput
                     style={styles.input}
                     value={NameSerre}
                     onChangeText={setNameSerre}
-                    placeholder="Veuillez saisir la superficie..."
+                    placeholder="Entrez la superficie..."
                     keyboardType="default"
                 />
 
+
+
+
                 <Text style={styles.label}>
-                    Superficie en m²
+                    Nombre de tiges par mètre
                 </Text>
                 <TextInput
                     style={styles.input}
-                    value={nombreMetre}
-                    onChangeText={setnombreMetre}
-                    placeholder="Veuillez saisir la superficie..."
-                    keyboardType="default"
+                    placeholder='Entrez le nombre de tiges par mètre..'
+                    keyboardType="numeric"
+                    value={Nombre_Tiges_Total.toString()}
+                    onChangeText={(text) => {
+                        if (/^\d*$/.test(text)) { 
+                            setNombre_Tiges_Total(text); 
+                        } else {
+                        Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                        }
+                    }}
                 />
+
+
+                
+ 
+
+              
+
+
+
+
+
+                <Text style={styles.label}>
+                    Poids moyen de fruit (en gramme)
+                </Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Entrez le poids moyen de fruit..."
+                    keyboardType="numeric"
+                    value={PoidsMoyen.toString()}
+                    onChangeText={(text) => {
+                        if (/^\d*$/.test(text)) { 
+                        setPoidsMoyen(text); 
+                        } else {
+                        Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                        }
+                    }}
+                />
+
+                
 
 
 
             </View>
 
-            <TouchableOpacity style={styles.createButton} onPress={handleSubmit} disabled={isLoading} >
             {
-                isLoading ? 
-                <>
-                <Text style={styles.createButtonText}>Création en cours...</Text>
-                </>
-                :
-                <>
-                <Ionicons name="add" size={18} color="#fff" />
-                <Text style={styles.createButtonText}>Créer la nouvelle serre</Text>
-                </>
+                !isKeyboardVisible && 
+                <TouchableOpacity style={styles.createButton} onPress={handleSubmit} disabled={isLoading} >
+                {
+                    isLoading ? 
+                    <>
+                    <Text style={styles.createButtonText}>Traitement en cours...</Text>
+                    </>
+                    :
+                    <>
+                    <Ionicons name="add" size={18} color="#fff" />
+                    <Text style={styles.createButtonText}>Créer la nouvelle serre</Text>
+                    </>
+                }
+                </TouchableOpacity>
             }
-            </TouchableOpacity>
         </View>
         </>
     );

@@ -4,11 +4,11 @@
     "slug": "tracktom-pcsagri",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logot.jpg",
+    "icon": "./assets/logot.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logot.jpg",
+      "image": "./assets/logot.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logot.jpg",
+        "foregroundImage": "./assets/logot.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.pcsagri.tracktomTest"

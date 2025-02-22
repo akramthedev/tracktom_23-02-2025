@@ -142,7 +142,7 @@ export default function ProfilOthers({route}) {
                     }
 
                 }
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                await new Promise(resolve => setTimeout(resolve, 111));
 
             } catch (error) {
                 console.error("Error fetching user details:", error);
@@ -240,7 +240,7 @@ export default function ProfilOthers({route}) {
                                 style={styles.elipsisButton}
                                 onPress={() => setIsPopupVisible(!isPopupVisible)}
                             >
-                                <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                                <Ionicons name="menu" size={24} color="#141414" />
                             </TouchableOpacity>
                         </View>
                         {
@@ -338,7 +338,7 @@ export default function ProfilOthers({route}) {
                                    {
                                     job !== null &&  job !== "" && job !== undefined && 
                                     <View style={styles.infoRow}>
-                                    <Text style={styles.label}>&nbsp;&nbsp;&nbsp;Post :</Text>
+                                    <Text style={styles.label}>&nbsp;&nbsp;&nbsp;Poste :</Text>
                                     <Text style={styles.value}>
                                             {/* {userType.toLowerCase() === "admin" ? "Chef d'exploitation" : userType.toLowerCase() === "staff" ? "Personnel" : "Inconnu"}&nbsp;&nbsp; */}
                                             {job}&nbsp;&nbsp;

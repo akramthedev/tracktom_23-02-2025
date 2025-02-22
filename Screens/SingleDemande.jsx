@@ -17,6 +17,18 @@ import { useFonts } from 'expo-font';
 
 
 
+function formatDate(dateString) {
+    const date = new Date(dateString); // Convert to Date object
+  
+    const day = String(date.getUTCDate()).padStart(2, '0'); // Get day and pad if necessary
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Get month (1-based)
+    const year = date.getUTCFullYear(); // Get year
+  
+    return `${day}/${month}/${year}`; // Return in DD/MM/YYYY format
+  }
+
+  
+  
 
 
 export default function SingleDemande({route}) {
@@ -26,7 +38,7 @@ export default function SingleDemande({route}) {
 
     const navigation = useNavigation();
     const { id , name ,email , entreprise ,telephone , created_at } = route.params; 
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isLoading2, setIsLoading2] = useState(false);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const skeletonAnimation = useRef(new Animated.Value(0)).current;
@@ -41,26 +53,26 @@ export default function SingleDemande({route}) {
   
 
 
-    useEffect(() => {
-        setIsLoading(true);
-        Animated.loop(
-            Animated.sequence([
-                Animated.timing(skeletonAnimation, {
-                    toValue: 1,
-                    duration: 500,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(skeletonAnimation, {
-                    toValue: 0,
-                    duration: 500,
-                    useNativeDriver: true,
-                }),
-            ])
-        ).start();
+    // useEffect(() => {
+    //     setIsLoading(true);
+    //     Animated.loop(
+    //         Animated.sequence([
+    //             Animated.timing(skeletonAnimation, {
+    //                 toValue: 1,
+    //                 duration: 500,
+    //                 useNativeDriver: true,
+    //             }),
+    //             Animated.timing(skeletonAnimation, {
+    //                 toValue: 0,
+    //                 duration: 500,
+    //                 useNativeDriver: true,
+    //             }),
+    //         ])
+    //     ).start();
 
-        setIsLoading(false);
+    //     setIsLoading(false);
 
-    }, []);
+    // }, []);
 
 
     const skeletonBackground = skeletonAnimation.interpolate({
@@ -136,7 +148,7 @@ export default function SingleDemande({route}) {
                         onPress={() => setIsPopupVisible(!isPopupVisible)}
                         style={styles.elipsisButton}
                     >
-                        <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                        <Ionicons name="menu" size={24} color="#141414" />
                     </TouchableOpacity>
                 </View>
 
@@ -202,7 +214,7 @@ export default function SingleDemande({route}) {
                             </View>
                             <View style={styles.ViewLabel}>
                                 <Text style={styles.TitleLabel}>Date de soumission :</Text>
-                                <Text style={styles.value}>{created_at}</Text>
+                                <Text style={styles.value}>{formatDate(created_at)}</Text>
                             </View>
                         </View>
 

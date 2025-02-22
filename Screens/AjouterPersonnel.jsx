@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
     View,
     TouchableOpacity,
-    Dimensions,
     TextInput,
     Alert,
     ScrollView
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import PopUpNavigate from "../Components/PopUpNavigate";
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,9 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import {ENDPOINT_URL} from "../App";
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-
+import { Keyboard } from 'react-native';
 
 
 export default function AjouterPersonnel() {
@@ -32,11 +28,39 @@ export default function AjouterPersonnel() {
     const [imageUri, setImageUri] = useState(null);
     const [imageInfo, setImageInfo] = useState({ name: null, resolution: null, type: null });
     const [isPopupVisible, setIsPopupVisible] = useState(false);
-
+    const [isLoading, setisLoading] = useState(false);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
+
+
+
+    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setIsKeyboardVisible(true);
+            }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setIsKeyboardVisible(false);
+            }
+        );
+    
+        // Clean up listeners on unmount
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
+    
+
 
     const [fontsLoaded] = useFonts({
             'DMSerifDisplay': require('../fonts/DMSerifDisplay-Regular.ttf'),
@@ -45,6 +69,10 @@ export default function AjouterPersonnel() {
             "InriaBold": require('../fonts/InriaSerif-Bold.ttf'),
             "InterBold": require('../fonts/Inter_24pt-Black.ttf'),
         });
+
+
+
+        
     
 
     const selectImage = async () => {
@@ -81,6 +109,7 @@ export default function AjouterPersonnel() {
             return;
         }
 
+        setisLoading(true);
         try{
             const token =  await AsyncStorage.getItem('Token'); 
             console.log("token  =====>",token);
@@ -103,15 +132,26 @@ export default function AjouterPersonnel() {
             });
             console.log("resp Personnel ===>" ,resp);
             if(resp.status === 201){
-                console.log("created Personnel ===>");
+                setFullName("");
+                setEmail("");
+                setPassword("");
+                setPhone("");
                 navigation.navigate("MesPersonnels");
-            }
-          }
+                }
+                else{
+                    Alert.alert("Oups, une erreur est survenue lors de la création de votre personnel.");
+                }
+                setisLoading(false);
+
+
+        }
     
         catch(e){
+            setisLoading(false);
+
             console.log("error Personnel ===>",e);
         } finally{
-            // setloading(false);
+            setisLoading(false);
         }
 
     }
@@ -142,7 +182,7 @@ export default function AjouterPersonnel() {
                         onPress={() => setIsPopupVisible(!isPopupVisible)}
                         style={styles.elipsisButton}
                     >
-                        <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                        <Ionicons name="menu" size={24} color="#141414" />
                     </TouchableOpacity>
                 </View>
 
@@ -225,10 +265,23 @@ export default function AjouterPersonnel() {
 
             </ScrollView>
 
-            <TouchableOpacity style={styles.createButton} onPress={handleSubmit}>
-                <Ionicons name="add" size={18} color="#fff" />
-                <Text style={styles.createButtonText}>Créer le nouveau personnel</Text>
-            </TouchableOpacity>
+            {
+                !isKeyboardVisible && (
+                    <TouchableOpacity  disabled={isLoading} style={styles.createButton} onPress={handleSubmit}>
+                        {
+                            !isLoading && 
+                            <Ionicons name="add" size={18} color="#fff" /> 
+                        }
+                        <Text style={styles.createButtonText}>
+                            {
+                                isLoading ? "Traitement en cours..."
+                                :
+                                "Créer le nouveau personnel"
+                            }
+                        </Text>
+                    </TouchableOpacity>
+                )
+            }
         </>
     );
 }
@@ -319,7 +372,7 @@ const styles = StyleSheet.create({
         color : "gray"
     },
     createButton: {
-        backgroundColor: '#BE2929',
+        backgroundColor: '#BE2929',  
         borderRadius: 8,
         paddingVertical: 15,
         flexDirection: 'row',

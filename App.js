@@ -1,11 +1,9 @@
-  import React, { useEffect, useState } from 'react';
+  import React, { useEffect } from 'react';
   import { NavigationContainer } from '@react-navigation/native';
-  import { Alert, StatusBar } from 'react-native';
+  import { StatusBar } from 'react-native';
   import { createNativeStackNavigator } from '@react-navigation/native-stack';
   import { AuthProvider, useAuth } from './Helpers/AuthContext';
-  import { getToken } from './Helpers/tokenStorage';
-
-  // Importation des écrans
+  import TermsAndConditions from './Screens/TermsAndConditions';
   import SplashScreen from './Screens/SplashScreen';
   import Home from './Screens/Home';
   import Login from './Screens/Login';
@@ -32,13 +30,10 @@
   export const ENDPOINT_URL = "https://track-tom-test.pcs-agri.com/api/";
 
 
-
-
-
   export default function App() {
     return (
       <AuthProvider>
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+        <StatusBar translucent={false} backgroundColor="black"  />
         <MainNavigator />
       </AuthProvider>
     );
@@ -61,11 +56,13 @@
               <Stack.Screen name="Home" component={Home} />
               <Stack.Screen name="Login" component={Login} />
               <Stack.Screen name="Register" component={Register} />
+              <Stack.Screen name="TermsAndConditions" component={TermsAndConditions} />
             </>
           ) : (
             <>
               <Stack.Screen name="Dashboard" component={Dashboard} />
               <Stack.Screen name="MesCalculs" component={MesCalculs} />
+              <Stack.Screen name="TermsAndConditions" component={TermsAndConditions} />
               <Stack.Screen name="SingleCalcul" component={SingleCalcul} />
               <Stack.Screen name="AjouterCalcul" component={AjouterCalcul} />
               <Stack.Screen name="Profil" component={Profil} />

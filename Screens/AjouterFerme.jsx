@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -13,6 +13,7 @@ import {ENDPOINT_URL} from "../App";
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
+import { Keyboard } from 'react-native';
 
 
 
@@ -37,9 +38,8 @@ const [fontsLoaded] = useFonts({
 
      const navigation = useNavigation();
     const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const [superficie, setsuperficie] = useState(null);
-    const [localisation, setlocalisation] = useState(null);
-    const [appelation, setappelation] = useState(null);
+    const [commune, setcommune] = useState("");
+    const [appelation, setappelation] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
  
@@ -47,22 +47,49 @@ const [fontsLoaded] = useFonts({
 
        
 
+    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setIsKeyboardVisible(true);
+            }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setIsKeyboardVisible(false);
+            }
+        );
+    
+        // Clean up listeners on unmount
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
+    
 
 
         
         const handleSubmit = async () => {
 
             if (!appelation) {
-                Alert.alert('Le champ appelation de ferme ne peux pas être vide ! ')
+                Alert.alert("Le champ `Nom` de ferme est obligatoire.")
                 return;
             }
+
             setIsLoading(true);
 
 
             const formData = new FormData();
             formData.append('nom_ferme', appelation);
-            formData.append('surface', superficie);
-            formData.append('commune', localisation);
+            formData.append('commune', commune ? commune : "--");
+            formData.append('surface', 666);
+
+            
 
 
             try{
@@ -77,16 +104,13 @@ const [fontsLoaded] = useFonts({
 
                 
                 if(resp.status === 201){
-                     setappelation("");
-                    setlocalisation("");
-                    setsuperficie(0);
+                    setappelation("");
+                    setcommune("");
                     setIsLoading(false);
-                    Alert.alert("Ferme créée avec succès.");
                     navigation.navigate("MesFermes");
                 }
                 else{
                     setIsLoading(false);
-
                     Alert.alert('Une erreur est survenue lors de la création de la ferme.');
                 }
               }
@@ -135,7 +159,7 @@ if (!fontsLoaded) {
                     onPress={() => setIsPopupVisible(!isPopupVisible)}
                     style={styles.elipsisButton}
                 >                    
-                    <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                    <Ionicons name="menu" size={24} color="#141414" />
                 </TouchableOpacity>
             </View>
 
@@ -144,7 +168,7 @@ if (!fontsLoaded) {
 
 
                 <Text style={styles.label}>
-                    Appelation
+                    Nom&nbsp;<Text style={styles.required}>*</Text>
                 </Text>
                 <TextInput
                     style={styles.input}
@@ -154,29 +178,19 @@ if (!fontsLoaded) {
                     keyboardType="default"
                 />
 
-
+ 
                 <Text style={styles.label}>
-                    Localisation
+                    Commune
                 </Text>
                 <TextInput
                     style={styles.input}
-                    value={localisation}
-                    onChangeText={setlocalisation}
+                    value={commune}
+                    onChangeText={setcommune}
                     placeholder="Veuillez saisir la localisation..."
                     keyboardType="default"
                 />
 
 
-                <Text style={styles.label}>
-                    Superficie en Hectare
-                </Text>
-                <TextInput
-                    style={styles.input}
-                    value={superficie}
-                    onChangeText={setsuperficie}
-                    placeholder="Veuillez saisir la superficie..."
-                    keyboardType="default"
-                />
 
  
             </View>
@@ -184,13 +198,22 @@ if (!fontsLoaded) {
             {
                 isLoading ? 
                 <TouchableOpacity style={styles.createButton} disabled={isLoading} >
-                    <Text style={styles.createButtonText}>Création en cours...</Text>
+                    <Text style={styles.createButtonText}>Traitement en cours...</Text>
                 </TouchableOpacity>
                 :
-                <TouchableOpacity style={styles.createButton} onPress={handleSubmit} disabled={isLoading} >
-                    <Ionicons name="add" size={18} color="#fff" />
-                    <Text style={styles.createButtonText}>Créer la nouvelle ferme</Text>
-                </TouchableOpacity>
+                <>
+                {
+                    !isKeyboardVisible &&
+                    <TouchableOpacity style={styles.createButton} onPress={handleSubmit} disabled={isLoading} >
+                        <Ionicons name="add" size={18} color="#fff" />
+                        <Text style={styles.createButtonText}>
+                            {
+                                isLoading ? "Traitement en cours..." : "Créer la nouvelle ferme"
+                            }
+                        </Text>
+                    </TouchableOpacity>                    
+                }
+                </>
             }
         </View>
         </>
@@ -325,5 +348,7 @@ const styles = StyleSheet.create({
         right : 0
     },
 
-    
+    required: {
+        color: '#BE2929',
+    },
 });

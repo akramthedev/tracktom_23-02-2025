@@ -14,15 +14,20 @@ import { useFonts } from 'expo-font';
 
 
 
-function formatDate(dateString) {
-    const date = new Date(dateString); // Convert to Date object
-  
-    const day = String(date.getUTCDate()).padStart(2, '0'); // Get day and pad if necessary
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Get month (1-based)
-    const year = date.getUTCFullYear(); // Get year
-  
-    return `${day}/${month}/${year}`; // Return in DD/MM/YYYY format
+
+function formateDate(isoString) {
+    const date = new Date(isoString);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+    const year = date.getUTCFullYear();
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    let hoursX = parseInt(hours)+1;
+    
+    return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
   }
+  
+
 
 
 export default function SingleCalcul({route}) {
@@ -43,11 +48,11 @@ export default function SingleCalcul({route}) {
         classeTotale ,
         created_at ,
         nom_ferme,
-        surface,
         commune,
         ferme_id ,
         serre_id ,
         nom_serre,
+        superficie,
         stemsDetected ,
         traitement_videos_sum_classe1 ,
         traitement_videos_sum_classe2 ,
@@ -55,43 +60,48 @@ export default function SingleCalcul({route}) {
         traitement_videos_sum_classe4 ,
         traitement_videos_sum_classe5 ,
         traitement_videos_sum_classe6 ,
-        traitement_videos_sum_classe7 
     } = route.params; 
 
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const skeletonAnimation = useRef(new Animated.Value(0)).current;
     const [isDeleteClicked, setisDeleteClicked] = useState(false);
     const [isLoadingDelete, setisLoadingDelete] = useState(false);
-
+    const [animatedValue1, setAnimatedValue1] = useState(0);
+    const [animatedValue2, setAnimatedValue2] = useState(0);
+    const [animatedValue3, setAnimatedValue3] = useState(0);
+    const [animatedValue4, setAnimatedValue4] = useState(0);
+    const [animatedValue5, setAnimatedValue5] = useState(0);
+    const [animatedValue6, setAnimatedValue6] = useState(0);
  
 
 
 
 
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 200);
+    // useEffect(() => {
+        
+    //     const timer = setTimeout(() => {
+    //         setIsLoading(false);
+    //     }, 500);
+    //     Animated.loop(
+    //         Animated.sequence([
+    //             Animated.timing(skeletonAnimation, {
+    //                 toValue: 1,
+    //                 duration: 500,
+    //                 useNativeDriver: true,
+    //             }),
+    //             Animated.timing(skeletonAnimation, {
+    //                 toValue: 0,
+    //                 duration: 500,
+    //                 useNativeDriver: true,
+    //             }),
+    //         ])
+    //     ).start();
 
-        Animated.loop(
-            Animated.sequence([
-                Animated.timing(skeletonAnimation, {
-                    toValue: 1,
-                    duration: 500,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(skeletonAnimation, {
-                    toValue: 0,
-                    duration: 500,
-                    useNativeDriver: true,
-                }),
-            ])
-        ).start();
+    //     return () => clearTimeout(timer);  
 
-        return () => clearTimeout(timer);  
-    }, []);
+    //  }, []);
 
 
     const skeletonBackground = skeletonAnimation.interpolate({
@@ -99,6 +109,49 @@ export default function SingleCalcul({route}) {
         outputRange: ['#e8e8e8', '#f5f5f5'],
     });
 
+    
+    
+
+    const animateValue = (setValue, finalValue, duration = 2000) => {
+        let startTime = null;
+    
+        const animate = (timestamp) => {
+          if (!startTime) startTime = timestamp; // Initialize start time
+          const elapsedTime = timestamp - startTime; // Calculate elapsed time
+    
+          // Calculate progress (0 to 1)
+          const progress = Math.min(elapsedTime / duration, 1);
+    
+          // Update the current value based on progress
+          const currentValue = Math.floor(progress * finalValue);
+          setValue(currentValue);
+    
+          // Continue the animation if not complete
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }   
+        };
+    
+        requestAnimationFrame(animate); // Start the animation
+      };
+
+
+
+      useEffect(() => {
+        animateValue(setAnimatedValue1, traitement_videos_sum_classe1 || 0, 1500);  
+        animateValue(setAnimatedValue2, traitement_videos_sum_classe2 || 0, 2000);
+        animateValue(setAnimatedValue3, traitement_videos_sum_classe3 || 0, 2300);
+        animateValue(setAnimatedValue4, traitement_videos_sum_classe4 || 0, 1780);
+        animateValue(setAnimatedValue5, traitement_videos_sum_classe5 || 0, 2600);
+        animateValue(setAnimatedValue6, traitement_videos_sum_classe6 || 0, 1400);
+      }, [
+        traitement_videos_sum_classe1,
+        traitement_videos_sum_classe2,
+        traitement_videos_sum_classe3,
+        traitement_videos_sum_classe4,
+        traitement_videos_sum_classe5,
+        traitement_videos_sum_classe6,
+      ]);
 
 
 
@@ -195,7 +248,7 @@ if (!fontsLoaded) {
                         onPress={() => setIsPopupVisible(!isPopupVisible)}
                         style={styles.elipsisButton}
                     >
-                        <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                        <Ionicons name="menu" size={24} color="#141414" />
                     </TouchableOpacity>
                 </View>
 
@@ -247,16 +300,16 @@ if (!fontsLoaded) {
                         <View style={styles.detailsContainer}>
                             <Text style={styles.sectionTitle}>Vue d'ensemble : </Text>
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Ferme :</Text>
-                                <Text style={styles.value}>{nom_ferme ? nom_ferme : "---"}&nbsp;&nbsp;</Text>
+                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Ferme affectée :</Text>
+                                <Text style={styles.value}>{nom_ferme ? nom_ferme : "--"}&nbsp;&nbsp;</Text>
                             </View>
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Serre :</Text>
-                                <Text style={styles.value}>{nom_serre ? nom_serre : "---"}&nbsp;&nbsp;</Text>
+                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Serre affectée :</Text>
+                                <Text style={styles.value}>{nom_serre ? nom_serre : "--"}&nbsp;&nbsp;</Text>
                             </View>
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Surface :</Text>
-                                <Text style={styles.value}>{surface ? <>{surface} m²</> : "---"}&nbsp;&nbsp;</Text>
+                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Nombre de mètres :</Text>
+                                <Text style={styles.value}>{superficie ? <>{superficie} m</> : "0"}&nbsp;&nbsp;</Text>
                             </View>
                             <View style={styles.ViewLabel}>
                                 <Text style={styles.TitleLabel}>&nbsp;&nbsp;Tomates détectées :</Text>
@@ -268,18 +321,22 @@ if (!fontsLoaded) {
                             </View>
                             <View style={styles.ViewLabel}>
                                 <Text style={styles.TitleLabel}>&nbsp;&nbsp;Date du calcul :</Text>
-                                <Text style={styles.value}>{created_at ? formatDate(created_at) : "---"}&nbsp;&nbsp;</Text>
+                                <Text style={styles.value}>{created_at ? formateDate(created_at) : "--"}&nbsp;&nbsp;</Text>
                             </View>
                             <View style={styles.HRHR} />
                             
                             <Text style={styles.sectionTitle}>Répartition des tomates : </Text>
                             
+                             
+
+
+
                             <View style={styles.ushfuohodsuf} >
                                 <View style={{
                                     display : "flex", 
                                     flexDirection : "row", 
                                     alignItems : "center", 
-                                    marginBottom : 15, 
+                                    marginBottom : 10, 
                                 }}  >
                                     <View style={{
                                         backgroundColor : "#5D9B4B", 
@@ -290,14 +347,12 @@ if (!fontsLoaded) {
                                         marginRight : 10
                                     }} />
                                     <Text style={styles.TitleLabel2}>
-                                        Type 1
+                                        Couleur 1
                                     </Text>
                                 </View>
                                 <View>
                                     <Text style={styles.valueHighlight}>
-                                    {
-                                        traitement_videos_sum_classe1 ? traitement_videos_sum_classe1 : 0
-                                    }&nbsp;tomates&nbsp;&nbsp;
+                                    {animatedValue1}&nbsp;tomates&nbsp;&nbsp;
                                     </Text>
                                 </View>
                             </View>
@@ -308,7 +363,7 @@ if (!fontsLoaded) {
                                     display : "flex", 
                                     flexDirection : "row", 
                                     alignItems : "center", 
-                                    marginBottom : 15, 
+                                    marginBottom : 10, 
                                 }}  >
                                     <View style={{
                                         backgroundColor : "#8DC63F", 
@@ -319,14 +374,12 @@ if (!fontsLoaded) {
                                         marginRight : 10
                                     }} />
                                     <Text style={styles.TitleLabel2}>
-                                        Type 2
+                                        Couleur 2
                                     </Text>
                                 </View>
                                 <View>
                                     <Text style={styles.valueHighlight}>
-                                    {
-                                        traitement_videos_sum_classe2 ? traitement_videos_sum_classe2 : 0
-                                    }&nbsp;tomates&nbsp;&nbsp;
+                                    {animatedValue2}&nbsp;tomates&nbsp;&nbsp;
                                     </Text>
                                 </View>
                             </View>
@@ -337,7 +390,7 @@ if (!fontsLoaded) {
                                     display : "flex", 
                                     flexDirection : "row", 
                                     alignItems : "center", 
-                                    marginBottom : 15, 
+                                    marginBottom : 10, 
                                 }}  >
                                     <View style={{
                                         backgroundColor : "#B9D92D", 
@@ -348,14 +401,12 @@ if (!fontsLoaded) {
                                         marginRight : 10
                                     }} />
                                     <Text style={styles.TitleLabel2}>
-                                        Type 3
+                                        Couleur 3
                                     </Text>
                                 </View>
                                 <View>
                                     <Text style={styles.valueHighlight}>
-                                    {
-                                        traitement_videos_sum_classe3 ? traitement_videos_sum_classe3 : 0
-                                    }&nbsp;tomates&nbsp;&nbsp;
+                                    {animatedValue3}&nbsp;tomates&nbsp;&nbsp;
                                     </Text>
                                 </View>
                             </View>
@@ -367,7 +418,7 @@ if (!fontsLoaded) {
                                     display : "flex", 
                                     flexDirection : "row", 
                                     alignItems : "center", 
-                                    marginBottom : 15, 
+                                    marginBottom : 10, 
                                 }}  >
                                     <View style={{
                                         backgroundColor : "#FFA500", 
@@ -378,14 +429,12 @@ if (!fontsLoaded) {
                                         marginRight : 10
                                     }} />
                                     <Text style={styles.TitleLabel2}>
-                                        Type 4
+                                        Couleur 4
                                     </Text>
                                 </View>
                                 <View>
                                     <Text style={styles.valueHighlight}>
-                                    {
-                                        traitement_videos_sum_classe4 ? traitement_videos_sum_classe4 : 0
-                                    }&nbsp;tomates&nbsp;&nbsp;
+                                    {animatedValue4}&nbsp;tomates&nbsp;&nbsp;
                                     </Text>
                                 </View>
                             </View>
@@ -397,7 +446,7 @@ if (!fontsLoaded) {
                                     display : "flex", 
                                     flexDirection : "row", 
                                     alignItems : "center", 
-                                    marginBottom : 15, 
+                                    marginBottom : 10, 
                                 }}  >
                                     <View style={{
                                         backgroundColor : "#FF4D00", 
@@ -408,14 +457,12 @@ if (!fontsLoaded) {
                                         marginRight : 10
                                     }} />
                                     <Text style={styles.TitleLabel2}>
-                                        Type 5
+                                        Couleur 5
                                     </Text>
                                 </View>
                                 <View>
                                     <Text style={styles.valueHighlight}>
-                                    {
-                                        traitement_videos_sum_classe5 ? traitement_videos_sum_classe5 : 0
-                                    }&nbsp;tomates&nbsp;&nbsp;
+                                    {animatedValue5}&nbsp;tomates&nbsp;&nbsp;
                                     </Text>
                                 </View>
                             </View>
@@ -427,7 +474,7 @@ if (!fontsLoaded) {
                                     display : "flex", 
                                     flexDirection : "row", 
                                     alignItems : "center", 
-                                    marginBottom : 15, 
+                                    marginBottom : 10, 
                                 }}  >
                                     <View style={{
                                         backgroundColor : "#D32F2F", 
@@ -438,20 +485,19 @@ if (!fontsLoaded) {
                                         marginRight : 10
                                     }} />
                                     <Text style={styles.TitleLabel2}>
-                                        Type 6
+                                        Couleur 6
                                     </Text>
                                 </View>
                                 <View>
                                     <Text style={styles.valueHighlight}>
-                                    {
-                                        traitement_videos_sum_classe6 ? traitement_videos_sum_classe6 : 0
-                                    }&nbsp;tomates&nbsp;&nbsp;
+                                    {animatedValue6}&nbsp;tomates&nbsp;&nbsp;
                                     </Text>
                                 </View>
                             </View>
 
 
 
+ 
                         </View>
 
                         

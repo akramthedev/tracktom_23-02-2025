@@ -7,6 +7,7 @@ import {
     FlatList,
     Animated,
     Alert,
+    Dimensions
 } from 'react-native';
 import PopUpNavigate from "../Components/PopUpNavigate";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -15,15 +16,20 @@ import axios from "axios";
 import { ENDPOINT_URL } from "../App";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
+const screenWidth = Dimensions.get("window").width;
 
 
 
 function formateDate(isoString) {
   const date = new Date(isoString);
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
-    const year = date.getUTCFullYear();
-    return `${day}/${month}/${year}`;
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+  const year = date.getUTCFullYear();
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  let hoursX = parseInt(hours)+1;
+  
+  return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
 }
 
 
@@ -50,7 +56,7 @@ export default function MesCalculs({ route }) {
             try {
                 startWavyAnimation(); 
                 const token = await AsyncStorage.getItem('Token');
-                console.warn(token)
+                console.warn("------------Mes Calculs-------------")
                 const resp = await axios.get(`${ENDPOINT_URL}predictions`, {
                   headers:{
                     Authorization : `Bearer ${token}`
@@ -63,6 +69,7 @@ export default function MesCalculs({ route }) {
                       return dateB - dateA;
                   });
                   setDATA(sortedData);
+                  console.warn(sortedData);
                 }
                 else{
                   setDATA([]);
@@ -122,11 +129,11 @@ export default function MesCalculs({ route }) {
             classeTotale : item.classeTotale,
             created_at : item.created_at,
             nom_ferme : item.ferme.nom_ferme,
-            surface : item.ferme.surface,
             commune : item.ferme.commune,
             ferme_id : item.ferme_id,
             serre_id : item.serre_id,
             nom_serre : item.serre.name,
+            superficie : item.superficie,
             stemsDetected : item.stemsDetected,
             traitement_videos_sum_classe1 : item.traitement_videos_sum_classe1,
             traitement_videos_sum_classe2 : item.traitement_videos_sum_classe2,
@@ -153,12 +160,16 @@ export default function MesCalculs({ route }) {
           <Text style={[styles.value, styles.highlight]}>{item.classeTotale} tomates</Text>
         </View>
         <View style={styles.label}>
-        <Text style={styles.value0}>Tiges détectées :</Text>
-        <Text style={[styles.value, styles.highlight]}>{item.stemsDetected} tiges</Text>
-      </View>
+          <Text style={styles.value0}>Tiges détectées :</Text>
+          <Text style={[styles.value, styles.highlight]}>{item.stemsDetected} tiges</Text>
+        </View>
         <View style={styles.label}>
-          <Text style={styles.value0}>Date de création : </Text>
-          <Text style={styles.value}>{formateDate(item.created_at)}</Text>
+          <Text style={styles.value0}>Nombre de mètres :</Text>
+          <Text style={[styles.value, styles.highlight]}>{item.superficie ? item.superficie : "0"} mètres</Text>
+        </View>
+        <View style={styles.label}>
+          <Text style={styles.value0}>Date du calcul : </Text>
+          <Text style={styles.valueX}>{formateDate(item.created_at)}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -184,9 +195,32 @@ if (!fontsLoaded) {
           isPopupVisible={isPopupVisible}
           setIsPopupVisible={setIsPopupVisible}    
       />
-
+      
       <View style={styles.container}>
         <View style={styles.header}>
+        {
+          DATA && DATA.length >= 1 && 
+          <View
+          style={{
+            position: "absolute",
+            top: 58,
+            left: screenWidth / 2 - 109,  
+            width: 200,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontFamily: "Inter",
+              fontSize: 13,
+              color: "gray",
+            }}
+          >
+            Total : {DATA.length}
+          </Text>
+        </View>
+        }
           {
               !isLoading ? 
               <TouchableOpacity 
@@ -200,12 +234,14 @@ if (!fontsLoaded) {
                 :
               <TouchableOpacity style={styles.addButton2} />
           }
-          <Text style={styles.title}>Mes Calculs</Text>
+          <Text style={styles.title}>
+            Mes Calculs
+          </Text>
           <TouchableOpacity 
             onPress={() => setIsPopupVisible(!isPopupVisible)}
             style={styles.elipsisButton}
           >
-            <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+            <Ionicons name="menu" size={24} color="#141414" />
           </TouchableOpacity>
         </View>
 
@@ -253,15 +289,34 @@ if (!fontsLoaded) {
             </View>
         ) : (
             <>
-            <FlatList
-                data={DATA}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContainer}
-                showsVerticalScrollIndicator={false}
-                refreshing={isLoading}
-                onRefresh={fetchData}
-            />
+            {
+              DATA.length === 0 ? 
+              <View style={{
+                        flex : 0.85, 
+                        backgroundColor : "white", 
+                        alignItems : "center", 
+                        justifyContent : "center", 
+                      }} >
+                        <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
+                          Aucune donnée
+                        </Text>
+              </View>  
+              :
+            <>
+
+             
+
+              <FlatList
+                  data={DATA}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => item.id}
+                  contentContainerStyle={styles.listContainer}
+                  showsVerticalScrollIndicator={false}
+                  refreshing={isLoading}
+                  onRefresh={fetchData}
+              />
+            </>
+            }
             </>
         )}
 
@@ -287,7 +342,8 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       paddingHorizontal: 20,
       paddingVertical: 20,
-      paddingBottom : 15
+      paddingBottom : 15, 
+      position : "relative"
     },
     addButton: {
       width: 30,
@@ -311,12 +367,14 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderRadius: 12,
       padding: 16,
-      marginBottom: 16,
+      marginBottom:20,
       shadowColor: 'gray',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 13,
-      elevation: 8,
+      shadowOffset: { width: 0, height: 1 }, // Reduced height to bring shadow closer
+      shadowOpacity: 0.04, // Reduced opacity to make the shadow lighter
+      shadowRadius: 6, // Reduced radius to make the shadow sharper
+      elevation: 4, // Reduced elevation for Android
+      borderWidth : 1, 
+      borderColor : "#f7f7f7"
     },
     label: {
       fontSize: 15,
@@ -329,6 +387,12 @@ const styles = StyleSheet.create({
     },
     value: {
       fontSize: 15,
+      color: '#141414',
+      fontFamily : 'Inter',
+      textAlign : "right"
+    },
+    valueX: {
+      fontSize: 14,
       color: '#141414',
       fontFamily : 'Inter',
       textAlign : "right"

@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import {ENDPOINT_URL} from "../App";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Keyboard } from 'react-native';
 
 
 
@@ -40,6 +41,31 @@ export default function SingleSerre({route}) {
 
 
 
+    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setIsKeyboardVisible(true);
+            }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setIsKeyboardVisible(false);
+            }
+        );
+    
+        // Clean up listeners on unmount
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
+    
+
 
 
     const [fontsLoaded] = useFonts({
@@ -55,14 +81,14 @@ export default function SingleSerre({route}) {
     const [isModifyClicked, setisModifyClicked] = useState(false);
     const [isDeleteClicked, setisDeleteClicked] = useState(false);
     const [appelation, setAppelation] = useState(null);
-    const [superficieX, setSuperficieX] = useState(0);
+    const [Nombre__X, setNombre__X] = useState("");
     const navigation = useNavigation();
-    const { id, created_at, nameSerre, superficie} = route.params; 
-    const [isLoading, setIsLoading] = useState(true);
+    const { id, created_at, nameSerre, poids_fruit, nbr_tiger} = route.params; 
+    const [isLoading, setIsLoading] = useState(false);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const skeletonAnimation = useRef(new Animated.Value(0)).current;
     const [isDeleting, setisDeleting] = useState(false);
- 
+    const [PoidsMoyen, setPoidsMoyen] = useState("");
 
 
 
@@ -108,16 +134,32 @@ export default function SingleSerre({route}) {
                     ).start();
     
                     // Simulate a delay (e.g., fetching data)
-                    timer = setTimeout(() => {
-                        setIsLoading(false); // Stop loading after 1 second
-                        if (animationLoop) {
-                            animationLoop.stop(); // Stop the animation once data is loaded
-                        }
-                    }, 200);
+                    setIsLoading(false);
     
                     // Update state or perform other actions
+
+
+                    let NT = 0;
+                    if(nbr_tiger === null){
+                        NT = 0;
+                    }
+                    else{
+                        NT = parseInt(nbr_tiger);
+                    }
+
+                    let PF = 0;
+                    if(poids_fruit === null){
+                        PF = 0;
+                    }
+                    else{
+                        PF = parseInt(poids_fruit);
+                    }
+
+
                     setAppelation(nameSerre);
-                    setSuperficieX(superficie);
+                    setPoidsMoyen(PF);
+                    setNombre__X(NT);
+
                 } catch (error) {
                     console.error("Error fetching data:", error);
                     setIsLoading(false); // Stop loading in case of error
@@ -160,14 +202,18 @@ export default function SingleSerre({route}) {
  
     const handleSaveData = async()=>{
 
+        const XXX = Nombre__X ? parseInt(Nombre__X) || 1 : 1;
+        const PM = PoidsMoyen ? parseInt(PoidsMoyen) || 1 : 1;
+
 
         setIsLoadingUpdates(true);
             const token = await AsyncStorage.getItem('Token');
         try{
               let data = {
-                name : appelation,
-                superficie : parseInt(superficieX) 
-              }
+                name: appelation?.toString() || "",
+                nbr_tiger: XXX,
+                poids_fruit: PM
+            }
               
               const resp = await axios.put(`${ENDPOINT_URL}serres/${id}`, data, {
                 headers: {
@@ -175,7 +221,7 @@ export default function SingleSerre({route}) {
                 }
               });
               if(resp.status === 200){
-                console.log("resp =====>",resp)
+                console.log("resp =====>",resp.data)
                 setisModifyClicked(false);
                 setIsLoadingUpdates(false);
               }
@@ -208,7 +254,7 @@ export default function SingleSerre({route}) {
             if(resp.status === 200){
                 setisDeleting(false);
                 setisDeleteClicked(false);
-                navigation.navigate("MesFermes")
+                navigation.goBack();
             }
             else{
                 setisDeleting(false);
@@ -255,7 +301,7 @@ if (!fontsLoaded) {
                         Confirmer la suppression
                         </Text>
                         <Text style={styles.modalMessage}>
-                        Cette action supprimera l'élément définitivement.
+                        Cette action supprimera la serre définitivement.
                         </Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
@@ -300,7 +346,7 @@ if (!fontsLoaded) {
                         onPress={() => setIsPopupVisible(!isPopupVisible)}
                         style={styles.elipsisButton}
                     >
-                        <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                        <Ionicons name="menu" size={24} color="#141414" />
                     </TouchableOpacity>
                 </View>
 
@@ -367,21 +413,51 @@ if (!fontsLoaded) {
                                     }
                             </View>
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>Superficie :</Text>
+                                <Text style={styles.TitleLabel}>Nombre de tiges par mètre :</Text>
                                 {
                                         !isModifyClicked ? 
-                                        <Text style={styles.value}>{superficieX}</Text>
+                                        <Text style={styles.value}>{Nombre__X} tiges</Text>
                                         :
                                         <TextInput
                                             style={styles.input}
-                                            placeholder="Entrez la superficie..."
-                                            value={superficieX}
+                                            placeholder="Entrez le nombre..."
+                                            keyboardType="numeric"
                                             onChangeText={(text) => {
-                                                setSuperficieX(text);  
+                                                if (/^\d*$/.test(text)) { // Vérifie si le texte contient uniquement des chiffres
+                                                setNombre__X(text); // Met à jour l’état
+                                                } else {
+                                                Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                                                }
                                             }}
+                                            value={Nombre__X.toString()}
                                         />
-                                    }
+                                }
                             </View>
+
+
+                            <View style={styles.ViewLabel}>
+                                <Text style={styles.TitleLabel}>Poids moyen de fruit : </Text>
+                                {
+                                        !isModifyClicked ? 
+                                        <Text style={styles.value}>{PoidsMoyen} grammes</Text>
+                                        :
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="Entrez le nombre..."
+                                            keyboardType="numeric"
+                                            onChangeText={(text) => {
+                                                if (/^\d*$/.test(text)) { // Vérifie si le texte contient uniquement des chiffres
+                                                setPoidsMoyen(text); // Met à jour l’état
+                                                } else {
+                                                Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                                                }
+                                            }}
+                                            value={PoidsMoyen.toString()}
+                                        />
+                                }
+                            </View>
+
+
                             <View style={styles.ViewLabel}>
                                 <Text style={styles.TitleLabel}>Date de création :</Text>
                                 <Text style={styles.value}>
@@ -398,12 +474,12 @@ if (!fontsLoaded) {
                                 <View
                             style={styles.buttonContainerX}
                         >
-                            <TouchableOpacity style={styles.deleteButton} 
+                            <TouchableOpacity style={styles.deleteButton2} 
                                 onPress={()=>{
                                     setisDeleteClicked(true);
                                 }}
                             >
-                                <Text style={styles.deleteButtonText} >
+                                <Text style={styles.deleteButtonText2} >
                                     Supprimer
                                 </Text>
                             </TouchableOpacity>
@@ -423,16 +499,19 @@ if (!fontsLoaded) {
                         <View   
                             style={styles.buttonContainerX}
                         >
-                            <TouchableOpacity style={styles.deleteButton} 
-                                onPress={()=>{
-                                    setAppelation(nameSerre);
-                                    setisModifyClicked(false);
-                                }}
-                            >
-                                <Text style={styles.deleteButtonText} >
-                                    Annuler
-                                </Text>
-                            </TouchableOpacity>
+                            {
+                                !isKeyboardVisible && 
+                                <TouchableOpacity style={styles.deleteButton} 
+                                    onPress={()=>{
+                                        setAppelation(nameSerre);
+                                        setisModifyClicked(false);
+                                    }}
+                                >
+                                    <Text style={styles.deleteButtonText} >
+                                        Annuler
+                                    </Text>
+                                </TouchableOpacity>
+                            }
                             {
                                 isLoadingUpdates ? 
                                 <TouchableOpacity style={styles.editButton}
@@ -442,13 +521,18 @@ if (!fontsLoaded) {
                                     </Text>
                                 </TouchableOpacity>
                                 :
-                                <TouchableOpacity style={styles.editButton}
-                                    onPress={handleSaveData}
-                                >
-                                    <Text style={styles.editButtonText} >
-                                        Sauvegarder
-                                    </Text>
-                                </TouchableOpacity>
+                                <>
+                                {
+                                    !isKeyboardVisible && 
+                                    <TouchableOpacity style={styles.editButton}
+                                        onPress={handleSaveData}
+                                    >
+                                        <Text style={styles.editButtonText} >
+                                            Sauvegarder
+                                        </Text>
+                                    </TouchableOpacity>
+                                }
+                                </>
                             }
                         </View>
                             </> 
@@ -557,7 +641,7 @@ const styles = StyleSheet.create({
         color: '#141414',
     },
     deleteButton: {
-        backgroundColor: '#FDECEC',
+        backgroundColor: '#E6E6E6',
         borderRadius: 8,
         paddingVertical: 15,
         alignItems: 'center',
@@ -565,7 +649,17 @@ const styles = StyleSheet.create({
     deleteButtonText: {
         fontFamily : 'Inter',
         fontSize: 15,
-        color: '#BE2929',
+    },
+    deleteButton2: {
+        backgroundColor: '#E6E6E6',
+        borderRadius: 8,
+        paddingVertical: 15,
+        alignItems: 'center',
+        width : "30%"
+    },
+    deleteButtonText2: {
+        fontFamily : 'Inter',
+        fontSize: 15,
     },
     imageContainer: {
         alignItems: 'center',
@@ -621,8 +715,6 @@ const styles = StyleSheet.create({
         height : 52,
         alignItems : "center", 
         justifyContent : "center",
-        borderColor : "#FFACAC",
-        borderWidth : 1
     },
     deleteButtonText: {
         fontFamily : 'Inter',
@@ -667,7 +759,8 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontFamily : 'Inter',
-        fontSize: 17,
+        fontSize: 18,
+        fontWeight : "bold",
         color: '#141414',
         marginBottom: 10,
     },

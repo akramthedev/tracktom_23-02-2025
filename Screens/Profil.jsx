@@ -94,9 +94,8 @@ export default function Profil({route}) {
                     'Authorization': `Bearer ${token}`
                   }
                 });
-                console.log("resp Profile ===>" ,resp);
                 if(resp.status === 200){
-                    console.log("Serre ===>",resp.data);
+                    console.log("Profile ===>",resp.data);
                     setfullName(resp.data.user.name);
                     setemail(resp.data.user.email);
                     setmobile(resp.data.user.telephone);
@@ -104,6 +103,13 @@ export default function Profil({route}) {
                     setUserType(resp.data.user.userType);
                     setJob(resp.data.user.job);
 
+                    const createdATX = await AsyncStorage.getItem('created_at');
+                    if(createdATX){
+                        setcreatedAt(createdATX);
+                    }
+                    else{
+                        setcreatedAt(null);
+                    }
 
                     await new Promise(resolve => setTimeout(resolve, 111));
                 }
@@ -230,7 +236,7 @@ if (!fontsLoaded) {
                                 style={styles.elipsisButton}
                                 onPress={() => setIsPopupVisible(!isPopupVisible)}
                             >
-                                <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+                                <Ionicons name="menu" size={24} color="#141414" />
                             </TouchableOpacity>
                         </View>
 
@@ -312,7 +318,7 @@ if (!fontsLoaded) {
                                     <Text style={styles.label}>&nbsp;Nom et prénom :</Text>
                                     {
                                         !isModifyClicked ? 
-                                        <Text style={styles.value}>{fullName}&nbsp;&nbsp;</Text>
+                                        <Text style={styles.value}>{fullName ? fullName : "--"}&nbsp;&nbsp;</Text>
                                         :
                                         <TextInput
                                             style={styles.input}
@@ -329,7 +335,7 @@ if (!fontsLoaded) {
                                     <Text style={styles.label}>&nbsp;Email :</Text>
                                     {
                                         !isModifyClicked ? 
-                                        <Text style={styles.value}>{email}&nbsp;&nbsp;</Text>
+                                        <Text style={styles.value}>{email ? email : "--"}&nbsp;&nbsp;</Text>
                                         :
                                         <TextInput
                                             style={styles.input}
@@ -346,7 +352,7 @@ if (!fontsLoaded) {
                                     <Text style={styles.label}>&nbsp;N° téléphone :</Text>
                                     {
                                         !isModifyClicked ? 
-                                        <Text style={styles.value}>{mobile}&nbsp;&nbsp;</Text>
+                                        <Text style={styles.value}>{mobile ? mobile : "--"}&nbsp;&nbsp;</Text>
                                         :
                                         <TextInput
                                             style={styles.input}
@@ -361,7 +367,7 @@ if (!fontsLoaded) {
                                 </View>
                                 <View style={styles.infoRow}>
                                     <Text style={styles.label}>&nbsp;Membre depuis le :</Text>
-                                    <Text style={styles.value}>{formatDate(createdAt)}&nbsp;&nbsp;</Text>
+                                    <Text style={styles.value}>{createdAt !== null && createdAt !== undefined && createdAt !== "" ? formatDate(createdAt) : "--" }&nbsp;&nbsp;</Text>
                                 </View>
                             </View>
 
@@ -372,7 +378,7 @@ if (!fontsLoaded) {
                                     <View style={styles.infoContainer}>
                                         <Text style={styles.sectionTitle}>Entreprise agricole{isAtleastOneModified2 &&<Text style={styles.titleX} >&nbsp;&nbsp;(Édité)</Text>}</Text>
                                         <View style={styles.infoRow}>
-                                            <Text style={styles.label}>&nbsp;Appelation :</Text>
+                                            <Text style={styles.label}>&nbsp;Intitulé :</Text>
                                             {
                                                 !isModifyClicked ? 
                                                 <Text style={styles.value}>{companyName}&nbsp;&nbsp;</Text>
@@ -389,7 +395,7 @@ if (!fontsLoaded) {
                                             }
                                         </View>
                                         <View style={styles.infoRow}>
-                                            <Text style={styles.label}>&nbsp;Post :</Text>
+                                            <Text style={styles.label}>&nbsp;Poste :</Text>
                                             {
                                                 !isModifyClicked ? 
                                                 <Text style={styles.value}>{job}&nbsp;&nbsp;</Text>

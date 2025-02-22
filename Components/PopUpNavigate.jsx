@@ -23,8 +23,11 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
     const slideAnimation = useRef(new Animated.Value(screenWidth)).current;
     const navigation = useNavigation();
     const { setIsAuthenticated } = useAuth();
+    const [isSuperAdmin, setisSuperAdmin] = useState(false);
+
 
     useEffect(() => {
+
             if (isPopupVisible) {
                 Animated.timing(slideAnimation, {
                     toValue: 0,
@@ -42,10 +45,37 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
 
 
 
+    useEffect(()=>{
+        const x = async ()=>{
+            try{
+                const userType = await AsyncStorage.getItem('user_type');
+                if(userType){
+                    if(userType === "superadmin"){
+                        setisSuperAdmin(true);
+                    }
+                    else{
+
+                        setisSuperAdmin(false);
+                    }
+                }
+                else{
+                    setisSuperAdmin(false);
+                }
+            }
+            catch(e){
+                setisSuperAdmin(false);
+                console.log(e.message);
+            }
+        }
+        x();
+    },[]);
+
+
+
     const logout = async () => {
         try{
             await AsyncStorage.removeItem('Token');
-            await AsyncStorage.removeItem('user_Type');
+            await AsyncStorage.removeItem('user_type');
             setTimeout(()=>{
                 setIsAuthenticated(false);
             }, 66);
@@ -102,36 +132,11 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
                             <Ionicons name="chevron-forward" size={18} color="#141414" />
                         </TouchableOpacity>
 
-        
-                        <TouchableOpacity
-                            onPress={
-                                ()=>{
-                                    navigation.navigate("NouvellesDemandes");
-                                    setIsPopupVisible(false);
-                                }
-                            }
-                            style={styles.popupItem}
-                        >
-                            <View style={styles.popupItemInsider}>
-                                <View
-                                    style={{
-                                        height : 30,
-                                        width : 40,
-                                        alignItems : "flex-start", 
-                                        justifyContent : "center"
-                                    }}
-                                >
-                                    <Ionicons name="sparkles-outline" size={24} color="#BE2929" />
-                                </View>
-                                <Text style={styles.popupText}>
-                                    Nouvelles Demandes
-                                </Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={18} color="#141414" />
-                        </TouchableOpacity>
-                        
+         
 
         
+                    {
+                        isSuperAdmin === true && 
                         <TouchableOpacity
                             onPress={
                                 ()=>{
@@ -158,6 +163,8 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#141414" />
                         </TouchableOpacity>
+                    }
+                        
                         
         
                         {/* <TouchableOpacity

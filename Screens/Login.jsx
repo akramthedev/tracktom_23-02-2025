@@ -9,12 +9,10 @@ import {
   Dimensions,
   Modal,
   Pressable,
-  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useFonts } from 'expo-font';
-import { saveToken, deleteToken, getToken } from '../Helpers/tokenStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 import axios from "axios";
@@ -67,12 +65,22 @@ export default function Login({ route }) {
         if (req.status === 200) {
           setLoading(false);
          
+   
           await AsyncStorage.setItem('Token', req.data.data.token);
-          await AsyncStorage.setItem('user_Type',req.data.data.user.user_type);
+          await AsyncStorage.setItem('created_at',req.data.data.user.created_at);
+          if(req.data.data.user.type === "admin"){
+            await AsyncStorage.setItem('user_type',req.data.data.user.user_type);
+          }
+          else{
+            await AsyncStorage.setItem('user_type',"NotAdmin");
+          }
+
+          setModalVisibleError(false);
+          setModalVisible(false);
 
           setTimeout(()=>{
             setIsAuthenticated(true);
-          }, 222);
+          }, 111);
 
         }
         if (req.status === 204){
@@ -192,7 +200,7 @@ export default function Login({ route }) {
                 </>
                 :
                 <>
-                  <Text style={styles.buttonText}>Accéder à mon compte</Text>
+                  <Text style={styles.buttonText}>S'authentifier </Text>
                   <Ionicons name="chevron-forward" size={19} color="#fff" />
                 </>
               }
@@ -217,13 +225,13 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     width: screenWidth,
-    height: screenHeight,
-    backgroundColor : "black"
-
+    height: screenHeight +40,
+    backgroundColor : "black", 
+    objectFit : "contain"
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.63)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', 
     padding: 20,
     paddingBottom : 0, 
     paddingTop : 0,
@@ -265,19 +273,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
   },
   lastContainer : {
-    position : "absolute", 
-    bottom : 20, 
-    right : 20,
-    left : 20
-},
+    marginTop : 30
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: "#BE2929",
+    backgroundColor:"rgba(255, 0, 0, 0.5)",
     borderRadius: 11,
-    height : 53, 
+    borderWidth : 1, 
+    borderColor:"rgba(255, 0, 0, 0.6)",
+    height : 55, 
     marginTop: 20,
+    position : "relative"
   },
   buttonText: {
     color: "#fff",
@@ -289,7 +297,7 @@ const styles = StyleSheet.create({
   },
   signupText: {
     fontFamily: 'Inter',
-    fontSize: 12,
+    fontSize: 13,
     color: '#fff',
     textAlign: 'center',
     marginTop: 20,

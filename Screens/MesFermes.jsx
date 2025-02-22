@@ -5,7 +5,8 @@ import {
     View,
     TouchableOpacity,
     FlatList,
-    Animated
+    Animated,
+    Dimensions
 } from 'react-native';
 import PopUpNavigate from "../Components/PopUpNavigate";
 import { useNavigation,useFocusEffect } from '@react-navigation/native';
@@ -14,8 +15,19 @@ import axios from "axios";
 import {ENDPOINT_URL} from "../App";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 
+
+
+function formateDate(isoString) {
+  const date = new Date(isoString);
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+  const year = date.getUTCFullYear();
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  return `${day}/${month}/${year}`;
+}
 
 
 
@@ -51,8 +63,10 @@ export default function MesFermes({ route }) {
       >
         <View style={styles.infosContainer}>
           <Text style={styles.textInfos1}>{item.nom_ferme}</Text>
-          <Text style={styles.textInfos2}>{item.commune}</Text> 
-          <Text style={styles.textInfos3}>{item.surface} Hectares</Text>
+          {/* <Text style={styles.textInfos2}>17 tiges / mètre</Text> */}
+          <Text style={styles.textInfos3}>{item.commune ? item.commune : "--"}</Text>
+          <Text style={styles.textInfos3}>{item.serres.length} Serres</Text>
+          <Text style={styles.textInfos3}>{item.created_at ? formateDate(item.created_at) : "--"}</Text>
         </View>
         <View style={styles.carretRight}>
           <Ionicons name="chevron-forward" size={20} color="gray" />
@@ -84,9 +98,12 @@ export default function MesFermes({ route }) {
                           new Date(b.created_at) - new Date(a.created_at)
                       );
 
+                      console.log("XX X X X X  X X X X X X X  X X X X ");
+                      console.log(sortedFarms[0]);                      
+                      console.log("XX X X X X  X X X X X X X  X X X X ");
+
                       setAllFermes(sortedFarms);
                   }
-                  await new Promise(resolve => setTimeout(resolve, 400));
               } catch (e) {
                   console.log("error Ferme ===>", e);
               } finally {
@@ -143,6 +160,32 @@ export default function MesFermes({ route }) {
       <View style={styles.container}>
 
         <View style={styles.header}>
+
+
+
+            {
+                                    allFermes && allFermes.length >= 1 && 
+                                    <View
+                                    style={{
+                                      position: "absolute",
+                                      top: 58,
+                                      left: screenWidth / 2 - 109,  
+                                      width: 200,
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        fontFamily: "Inter",
+                                        fontSize: 13,
+                                        color: "gray",
+                                      }}
+                                    >
+                                      Total : {allFermes.length}
+                                    </Text>
+                                  </View>
+                                  }
           
           {
               !isLoading ? 
@@ -163,7 +206,7 @@ export default function MesFermes({ route }) {
             onPress={() => setIsPopupVisible(!isPopupVisible)}
             style={styles.elipsisButton}
           >
-            <Ionicons name="ellipsis-vertical" size={24} color="#141414" />
+            <Ionicons name="menu" size={24} color="#141414" />
           </TouchableOpacity>
         </View>
   
@@ -196,13 +239,34 @@ export default function MesFermes({ route }) {
                       ))}
                   </View>
               ) : (
-                  <FlatList
-                    data={allFermes}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={styles.listContainer}
-                    showsVerticalScrollIndicator={false}
-                  />
+
+
+
+
+                   <>
+                                            {
+                                              allFermes.length === 0 ? 
+                                              <View style={{
+                                                        flex : 0.85, 
+                                                        backgroundColor : "white", 
+                                                        alignItems : "center", 
+                                                        justifyContent : "center", 
+                                                      }} >
+                                                        <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
+                                                          Aucune donnée
+                                                        </Text>
+                                              </View>  
+                                              :
+                                              <FlatList
+                                                  data={allFermes}
+                                                  renderItem={renderItem}
+                                                  keyExtractor={(item) => item.id}
+                                                  contentContainerStyle={styles.listContainer}
+                                                  showsVerticalScrollIndicator={false}
+                                                />
+                                            }
+                                            </>
+                  
               )}
         
       </View>
@@ -223,7 +287,8 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       paddingHorizontal: 20,
       paddingVertical: 20,
-      paddingBottom : 0
+      paddingBottom : 20, 
+      position : "relative"
 
     },
     addButton: {
@@ -255,7 +320,6 @@ const styles = StyleSheet.create({
       borderBottomColor : "gainsboro", 
       borderBottomWidth : 1, 
       padding : 10,
-      paddingLeft : 10, 
       borderRadius:10
     },
     infosContainer : {
@@ -264,14 +328,15 @@ const styles = StyleSheet.create({
       textAlign : "left",
       justifyContent : "center"
     },
-    textInfos1 : {
+    textInfos1: {
       width : "100%", 
       textAlign : "left", 
       fontFamily : 'Inter',
-      fontSize : 16, 
-      fontFamily : 'Inter',
-      fontWeight :"bold"
-    },
+      fontSize : 17,
+      fontWeight : "bold",
+      color :"rgb(78, 78, 78)" ,
+
+  },
     textInfos2 : {
       width : "100%", 
       textAlign : "left", 
@@ -304,7 +369,7 @@ const styles = StyleSheet.create({
       justifyContent : "center", 
       alignItems : "center", 
       position : "absolute", 
-      right : 10, 
+      right : 0, 
       top : 10
     },
 
