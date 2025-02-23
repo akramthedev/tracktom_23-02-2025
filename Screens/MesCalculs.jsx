@@ -575,7 +575,7 @@ filterContainer: {
 },
 filterButton: {
   padding: 10,
-  paddingLeft : 15, paddingRight : 15, 
+  paddingLeft : 12, paddingRight : 12, 
   backgroundColor: '#f5f5f5',
   borderRadius: 7,
 },
@@ -583,7 +583,7 @@ filterButton: {
 selectedButton : {
   backgroundColor: '#BE2929',
   padding: 10,
-  paddingLeft : 15, paddingRight : 15, 
+  paddingLeft : 12, paddingRight : 12, 
   borderRadius: 7,
 
 },
