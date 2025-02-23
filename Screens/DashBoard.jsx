@@ -39,7 +39,7 @@ function formateDate(isoString) {
 
 
 
-
+//hello ?, 
 
 
 function formatPoids(kg) {
@@ -55,6 +55,14 @@ function formatPoids(kg) {
   } else {
     return KKGG.toFixed(1) + ' Kg';
   }
+}
+
+
+function formatNumberK(num) {
+  if (typeof num !== "number" || isNaN(num) || num == null || num === undefined || num === "" || num === 0) {
+      return "0";
+  }
+  return num > 9999 ? Math.floor(num / 1000) + "K+" : num.toString();
 }
 
 
@@ -934,7 +942,7 @@ const [fontsLoaded] = useFonts({
                     source={require('../images/ak3.png')} // Update to your desired icon
                   />
                 </View>
-                <Text style={styles.cardValue}>{selectedData?.plants || 0}</Text>
+                <Text style={styles.cardValue}>{selectedData && selectedData.plants ? formatNumberK(selectedData.plants) : "0"}</Text>
                 <Text style={styles.cardTitle}>Total Tiges</Text>
               </View>
             </View>

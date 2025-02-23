@@ -8,10 +8,10 @@ const SplashScreen = () => {
     <View style={{  height : '100%', width : "100%", alignItems : "center", justifyContent : "center", backgroundColor : "white"  }} >
             <Image
               style={{
-                height : 50,  
-                width : 50, 
+                height : 209,  
+                width : 209, 
               }}
-              source={require('./loader.gif')}     
+              source={require('../assets/logot.png')}     
             />    
     </View>  
   );

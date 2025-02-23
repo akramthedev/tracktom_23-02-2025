@@ -7,7 +7,8 @@ import {
     FlatList,
     Animated,
     Alert,
-    Dimensions
+    Dimensions,
+    Image
 } from 'react-native';
 import PopUpNavigate from "../Components/PopUpNavigate";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -43,6 +44,7 @@ export default function MesCalculs({ route }) {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [DATA, setDATA] = useState([]);
     const [isLoading, setIsLoading] = useState(true);  
+    const [isLoading2, setisLoading2] = useState(true);  
     const animation = useRef(new Animated.Value(0)).current;  
     const [selectedButton, setSelectedButton] = useState('dateDesc');
     const navigation = useNavigation();
@@ -62,6 +64,7 @@ export default function MesCalculs({ route }) {
 
 
   const fetchData = async () => {
+    setSelectedButton("dateDesc");
     try {
       startWavyAnimation(); 
       const token = await AsyncStorage.getItem('Token');
@@ -72,15 +75,19 @@ export default function MesCalculs({ route }) {
       });
       if (resp.status === 200) {
         setDATA(resp.data);
+        setisLoading2(false);
+        setIsLoading(false);  
       } else {
         setDATA([]);
+        setisLoading2(false);
+        setIsLoading(false);  
       }
     } catch (e) {
+      setisLoading2(false);
+      setIsLoading(false);
       Alert.alert('Oups, une erreur est survenue lors de la récupération de vos données.');              
       console.log(e.message);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   }
 
 
@@ -95,29 +102,37 @@ export default function MesCalculs({ route }) {
   
 
 
-    const sortByMostTomatoes = () => {
+    const sortByMostTomatoes = async () => {
+      setisLoading2(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const sorted = [...DATA].sort((a, b) => b.classeTotale - a.classeTotale);
-      
       setDATA(sorted);
       if (flatListRef.current) {
         flatListRef.current.scrollToOffset({ offset: 0, animated: true });
       }
+      setisLoading2(false);
     }
   
-    const sortByDateAsc = () => {
+    const sortByDateAsc = async () => {
+      setisLoading2(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const sorted = [...DATA].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
       setDATA(sorted);
       if (flatListRef.current) {
         flatListRef.current.scrollToOffset({ offset: 0, animated: true });
       }
+      setisLoading2(false);
     }
   
-    const sortByDateDesc = () => {
+    const sortByDateDesc =async  () => {
+      setisLoading2(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const sorted = [...DATA].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setDATA(sorted);
       if (flatListRef.current) {
         flatListRef.current.scrollToOffset({ offset: 0, animated: true });
       }
+      setisLoading2(false);
     }
 
 
@@ -243,7 +258,26 @@ if (!fontsLoaded) {
         </View>
         }
           {
-              !isLoading ? 
+              isLoading || isLoading2 ? 
+              <TouchableOpacity 
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 20,
+                    backgroundColor: 'white',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Image
+                    style={{
+                      height : 40,  
+                      width : 40, 
+                    }}
+                    source={require('./loader.gif')}     
+                  /> 
+              </TouchableOpacity> 
+              :
               <TouchableOpacity 
                 style={styles.addButton}
                 onPress={()=>{
@@ -252,8 +286,6 @@ if (!fontsLoaded) {
               >
                 <Ionicons name="add" size={24} color="#fff" />
               </TouchableOpacity> 
-                :
-              <TouchableOpacity style={styles.addButton2} />
           }
           <Text style={styles.title}>
             Mes Calculs
@@ -556,14 +588,7 @@ skeletonLabel5: {
   backgroundColor: '#e0e0e0',
   borderRadius: 6,        
 },
-addButton2 : {
-  width: 30,
-  height: 30,
-  borderRadius: 20,
-  backgroundColor: 'white',
-  alignItems: 'center',
-  justifyContent: 'center',
-},
+
 
 filterContainer: {
   flexDirection: 'row',
@@ -577,7 +602,7 @@ filterButton: {
   padding: 10,
   paddingLeft : 12, paddingRight : 12, 
   backgroundColor: '#f5f5f5',
-  borderRadius: 7,
+  borderRadius: 7,      
 },
 
 selectedButton : {

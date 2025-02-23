@@ -200,7 +200,24 @@ if (!fontsLoaded) {
                 <Ionicons name="add" size={24} color="#fff" />
               </TouchableOpacity> 
                 :
-              <TouchableOpacity style={styles.addButton2} />
+              <TouchableOpacity 
+                                              style={{
+                                                width: 30,
+                                                height: 30,
+                                                borderRadius: 20,
+                                                backgroundColor: 'white',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                              }}
+                                            >
+                                              <Image
+                                                style={{
+                                                  height : 40,  
+                                                  width : 40, 
+                                                }}
+                                                source={require('./loader.gif')}     
+                                              /> 
+                                          </TouchableOpacity>
           }
 
           <Text style={styles.title}>Mes Personnels</Text>
