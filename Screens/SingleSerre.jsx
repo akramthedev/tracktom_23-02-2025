@@ -43,6 +43,9 @@ export default function SingleSerre({route}) {
 
     const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
+    const [cancel, setCancel] = useState(false);
+
+
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
@@ -82,6 +85,7 @@ export default function SingleSerre({route}) {
     const [isDeleteClicked, setisDeleteClicked] = useState(false);
     const [appelation, setAppelation] = useState(null);
     const [Nombre__X, setNombre__X] = useState("");
+    const [Nombre__XRecovery, setNombre__XRecovery] = useState("");
     const navigation = useNavigation();
     const { id, created_at, nameSerre, poids_fruit, nbr_tiger} = route.params; 
     const [isLoading, setIsLoading] = useState(false);
@@ -89,6 +93,7 @@ export default function SingleSerre({route}) {
     const skeletonAnimation = useRef(new Animated.Value(0)).current;
     const [isDeleting, setisDeleting] = useState(false);
     const [PoidsMoyen, setPoidsMoyen] = useState("");
+    const [PoidsMoyenRecovery, setPoidsMoyenRecovery] = useState("");
 
 
 
@@ -158,7 +163,9 @@ export default function SingleSerre({route}) {
 
                     setAppelation(nameSerre);
                     setPoidsMoyen(PF);
+                    setPoidsMoyenRecovery(PF);
                     setNombre__X(NT);
+                    setNombre__XRecovery(NT);
 
                 } catch (error) {
                     console.error("Error fetching data:", error);
@@ -186,24 +193,36 @@ export default function SingleSerre({route}) {
 
 
 
-
-
-
-
-
+    const handleCanceld = ()=>{
+        setCancel(true);
+        setNombre__X(Nombre__XRecovery);
+        setPoidsMoyen(PoidsMoyenRecovery);
+        setAppelation(nameSerre);
+        setCancel(false);
+    }
 
 
 
 
  
-    const [isLoadingUpdates, setIsLoadingUpdates] = useState(false);
+
+
+
+ 
+    const [IsLoadingUpdates, setIsLoadingUpdates] = useState(false);
 
     
  
     const handleSaveData = async()=>{
 
-        const XXX = Nombre__X ? parseInt(Nombre__X) || 1 : 1;
-        const PM = PoidsMoyen ? parseInt(PoidsMoyen) || 1 : 1;
+
+        if(appelation.length === 0 || appelation === "" || appelation === null){
+            Alert.alert("Le champ Appelation ne peut pas etre vide");
+            return;
+        }
+
+        const XXX = Nombre__X ? parseInt(Nombre__X) || 0 : 0;
+        const PM = PoidsMoyen ? parseInt(PoidsMoyen) || 0 : 0;
 
 
         setIsLoadingUpdates(true);
@@ -416,12 +435,12 @@ if (!fontsLoaded) {
                                 <Text style={styles.TitleLabel}>Nombre de tiges par mètre :</Text>
                                 {
                                         !isModifyClicked ? 
-                                        <Text style={styles.value}>{Nombre__X} tiges</Text>
+                                        <Text style={styles.value}>{Nombre__X !== null && Nombre__X !== "" ? Nombre__X : 0} tiges</Text>
                                         :
                                         <TextInput
                                             style={styles.input}
                                             placeholder="Entrez le nombre..."
-                                            keyboardType="numeric"
+                                            keyboardType="number-pad"
                                             onChangeText={(text) => {
                                                 if (/^\d*$/.test(text)) { // Vérifie si le texte contient uniquement des chiffres
                                                 setNombre__X(text); // Met à jour l’état
@@ -430,6 +449,7 @@ if (!fontsLoaded) {
                                                 }
                                             }}
                                             value={Nombre__X.toString()}
+                                            onSubmitEditing={() => Keyboard.dismiss()}
                                         />
                                 }
                             </View>
@@ -439,12 +459,12 @@ if (!fontsLoaded) {
                                 <Text style={styles.TitleLabel}>Poids moyen de fruit : </Text>
                                 {
                                         !isModifyClicked ? 
-                                        <Text style={styles.value}>{PoidsMoyen} grammes</Text>
+                                        <Text style={styles.value}>{PoidsMoyen !== null && PoidsMoyen !== "" ? PoidsMoyen : 0} grammes</Text>
                                         :
                                         <TextInput
                                             style={styles.input}
                                             placeholder="Entrez le nombre..."
-                                            keyboardType="numeric"
+                                            keyboardType="number-pad"
                                             onChangeText={(text) => {
                                                 if (/^\d*$/.test(text)) { // Vérifie si le texte contient uniquement des chiffres
                                                 setPoidsMoyen(text); // Met à jour l’état
@@ -453,6 +473,7 @@ if (!fontsLoaded) {
                                                 }
                                             }}
                                             value={PoidsMoyen.toString()}
+                                            onSubmitEditing={() => Keyboard.dismiss()}
                                         />
                                 }
                             </View>
@@ -501,9 +522,9 @@ if (!fontsLoaded) {
                         >
                             {
                                 !isKeyboardVisible && 
-                                <TouchableOpacity style={styles.deleteButton} 
+                                <TouchableOpacity  disabled={cancel} style={styles.deleteButton} 
                                     onPress={()=>{
-                                        setAppelation(nameSerre);
+                                        handleCanceld();
                                         setisModifyClicked(false);
                                     }}
                                 >
@@ -513,8 +534,8 @@ if (!fontsLoaded) {
                                 </TouchableOpacity>
                             }
                             {
-                                isLoadingUpdates ? 
-                                <TouchableOpacity style={styles.editButton}
+                                IsLoadingUpdates ? 
+                                <TouchableOpacity  disabled={IsLoadingUpdates} style={styles.editButton}
                                 >
                                     <Text style={styles.editButtonText} >
                                         Sauvegarde en cours...
@@ -526,6 +547,7 @@ if (!fontsLoaded) {
                                     !isKeyboardVisible && 
                                     <TouchableOpacity style={styles.editButton}
                                         onPress={handleSaveData}
+                                        disabled={IsLoadingUpdates}
                                     >
                                         <Text style={styles.editButtonText} >
                                             Sauvegarder

@@ -24,6 +24,7 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
     const navigation = useNavigation();
     const { setIsAuthenticated } = useAuth();
     const [isSuperAdmin, setisSuperAdmin] = useState(false);
+    const [isAdmin, setisAdmin] = useState(false);
 
 
     useEffect(() => {
@@ -49,21 +50,30 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
         const x = async ()=>{
             try{
                 const userType = await AsyncStorage.getItem('user_type');
-                if(userType){
+                console.warn(userType);
+                if(userType !== null && userType !== undefined){
                     if(userType === "superadmin"){
                         setisSuperAdmin(true);
+                        setisAdmin(true);
                     }
                     else{
-
                         setisSuperAdmin(false);
+                        if(userType === "admin"){
+                            setisAdmin(true);
+                        }
+                        else{
+                            setisAdmin(false);
+                        }
                     }
                 }
                 else{
                     setisSuperAdmin(false);
+                    setisAdmin(false);
                 }
             }
             catch(e){
                 setisSuperAdmin(false);
+                setisAdmin(false);
                 console.log(e.message);
             }
         }
@@ -194,6 +204,9 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
                             <Ionicons name="chevron-forward" size={18} color="#141414" />
                         </TouchableOpacity> */}
         
+
+                        {
+                            isAdmin  === true && 
                         <TouchableOpacity
                             onPress={
                                 ()=>{
@@ -220,7 +233,11 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#141414" />
                         </TouchableOpacity>
-        
+
+                        }
+
+
+
                         {/* <TouchableOpacity
                             onPress={
                                 ()=>{

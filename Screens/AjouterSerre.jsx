@@ -220,8 +220,9 @@ export default function AjouterSerre({route}) {
                 <TextInput
                     style={styles.input}
                     placeholder='Entrez le nombre de tiges par mètre..'
-                    keyboardType="numeric"
-                    value={Nombre_Tiges_Total.toString()}
+                    keyboardType="number-pad"
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                                        value={Nombre_Tiges_Total.toString()}
                     onChangeText={(text) => {
                         if (/^\d*$/.test(text)) { 
                             setNombre_Tiges_Total(text); 
@@ -247,8 +248,10 @@ export default function AjouterSerre({route}) {
                 <TextInput
                     style={styles.input}
                     placeholder="Entrez le poids moyen de fruit..."
-                    keyboardType="numeric"
-                    value={PoidsMoyen.toString()}
+
+                    keyboardType="number-pad"
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                                        value={PoidsMoyen.toString()}
                     onChangeText={(text) => {
                         if (/^\d*$/.test(text)) { 
                         setPoidsMoyen(text); 

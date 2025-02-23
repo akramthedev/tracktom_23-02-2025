@@ -33,17 +33,17 @@ export default function AjouterCalcul() {
 
     const navigation = useNavigation();
     const [selectedFarm, setSelectedFarm] = useState(null);
+    const [isTakingVideo, setisTakingVideo] = useState(false);
     const [selectedGreenhouse, setSelectedGreenhouse] = useState(null);
     const [videoUri, setVideoUri] = useState(null);
     const [videoInfo, setVideoInfo] = useState({ name: null, duration: null });
     const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const [nombreMetre,setnombreMetre] = useState(666);
     const [allFermes , setAllFermes] = useState([]);
 
     const [isLoading , setisLoading] = useState(true);
     const [progressUpload , setProgressUpload ] = useState(0);
     const [loading , setLoading ] = useState(false);
-    const [textUpload , setTestUpload ] = useState(null);
+    const [textUpload , setTextUploadingOfProgressBar ] = useState(null);
     const [filteredSerres, setFilteredSerres] = useState([]);
     const [allSerre , setAllSerre] = useState([]);
 
@@ -127,7 +127,10 @@ export default function AjouterCalcul() {
    
     const selectVideo = async () => {
 
+
         setIsKeyboardVisible(false);
+        setisTakingVideo(true);
+
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert('Permission Requise', 'Accès à la galerie requis pour sélectionner une vidéo.');
@@ -154,6 +157,8 @@ export default function AjouterCalcul() {
                 type: type || 'Unknown Type', // Display file type
             });
         }
+
+        setisTakingVideo(false);
     };
 
     
@@ -162,7 +167,7 @@ export default function AjouterCalcul() {
     // Function to handle taking a video
     const takeVideo = async () => {
         setIsKeyboardVisible(false);
-
+        setisTakingVideo(true);
         console.log("run takeVideo ======>");
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -185,6 +190,8 @@ export default function AjouterCalcul() {
                 duration: formatDuration(duration),
             });
         }
+        setisTakingVideo(false);
+
     };
 
     const formatDuration = (milliseconds) => {
@@ -222,7 +229,7 @@ export default function AjouterCalcul() {
         }
 
         setLoading(true);
-        setTestUpload("Envoi de la vidéo...");
+        setTextUploadingOfProgressBar("Envoi de la vidéo...");
         const token = await AsyncStorage.getItem('Token');
         
       
@@ -280,7 +287,6 @@ export default function AjouterCalcul() {
           setSelectedGreenhouse(null);
           setVideoInfo(null);
           setVideoUri(null);
-          setnombreMetre(0);
           setNombre__Y(0);
           setProgressUpload(0);
 
@@ -295,7 +301,7 @@ export default function AjouterCalcul() {
 
     const startWebSocketTracking = async () => {
         setLoading(true);
-        setTestUpload("Analyse des données en cours...");
+        setTextUploadingOfProgressBar("Analyse des données en cours...");
         setProgressUpload(0);
 
         let fileName = videoUri.split('/').pop();
@@ -309,6 +315,7 @@ export default function AjouterCalcul() {
         };
     
         ws.onmessage = (event) => {
+            console.log(`Message WebSocket reçu : ${event.data}`);
           const percentage  = parseFloat(event.data);
           if (!isNaN(percentage)) {
             console.log(`Processing percentage: ${percentage}%`); 
@@ -363,7 +370,16 @@ export default function AjouterCalcul() {
 
 
 
-    
+    useEffect(() => {
+        if (progressUpload >= 96 && textUpload === "Analyse des données en cours...") {
+            setTimeout(() => {
+                setProgressUpload(100);
+                navigation.navigate("MesCalculs")
+            }, 3000);  
+        }
+    }, [progressUpload]);
+
+
     
     if (!fontsLoaded) {
         return null;
@@ -507,16 +523,18 @@ export default function AjouterCalcul() {
 
                         <Text style={styles.label}>Nombre de mètres<Text style={styles.required}>&nbsp;*</Text></Text>
 
-                            <TextInput
+                            
+                        <TextInput
                                 style={styles.input}
-                                placeholder="Entrez le nombre de mètres linéaires... "
-                                keyboardType="numeric" 
-                                value={Nombre__Y.toString()}  
+                                placeholder="Entrez le nombre de mètres linéaires..."
+                                keyboardType="number-pad"
+                                onSubmitEditing={() => Keyboard.dismiss()}
+                                value={Nombre__Y}
                                 onChangeText={(text) => {
-                                    if (/^\d*$/.test(text)) {  
-                                    setNombre__Y(text); 
+                                    if (/^\d*$/.test(text)) {
+                                        setNombre__Y(text);  
                                     } else {
-                                    Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                                        Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
                                     }
                                 }}
                             />
@@ -525,26 +543,56 @@ export default function AjouterCalcul() {
                             <Text style={styles.label}>
                                 Vidéo <Text style={styles.required}>*</Text>
                             </Text>
-                            <TouchableOpacity style={styles.button} onPress={takeVideo}>
+                           
+                           
+
+                            <TouchableOpacity 
+                                disabled={isTakingVideo}  
+                                style={styles.button} 
+                                onPress={takeVideo} 
+                                activeOpacity={1} 
+                            >
                                 <Text style={styles.buttonText}>Prendre une vidéo</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} onPress={selectVideo}>
-                                <Text style={styles.buttonText}>Importer depuis la gallerie</Text>
+
+                            <TouchableOpacity 
+                                disabled={isTakingVideo} 
+                                style={styles.button} 
+                                onPress={selectVideo} 
+                                activeOpacity={1} 
+                            >
+                                <Text style={styles.buttonText}>Importer depuis la galerie</Text>
                             </TouchableOpacity>
 
-                                
-                            {videoUri && (
-                                <View style={styles.videoInfoContainer}>
-                                    <Text style={styles.videoInfoText}>
-                                        <Text style={styles.boldText}>Vidéo bien sélectionnée.</Text>
-                                    </Text>
-                                    {videoInfo.duration && (
+
+
+                            
+                            <>
+                            {
+                                isTakingVideo === true ? 
+                                    <View style={styles.videoInfoContainer}>
                                         <Text style={styles.videoInfoText}>
-                                            <Text style={styles.boldText}>Durée :</Text> {videoInfo.duration}
+                                            <Text style={styles.boldText}>Chargement de la vidéo...</Text>
                                         </Text>
-                                    )}
-                                </View>
-                            )}
+                                    </View>
+                                :
+                                <>
+                                {videoUri && (
+                                    <View style={styles.videoInfoContainer}>
+                                        <Text style={styles.videoInfoText}>
+                                            <Text style={styles.boldText}>Vidéo bien sélectionnée.</Text>
+                                        </Text>
+                                        {videoInfo.duration && (
+                                            <Text style={styles.videoInfoText}>
+                                                <Text style={styles.boldText}>Durée :</Text> {videoInfo.duration}
+                                            </Text>
+                                        )}
+                                    </View>
+                                )}
+                                </>
+                            }
+                            </>    
+                            
 
                                             
 

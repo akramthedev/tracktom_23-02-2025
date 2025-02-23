@@ -17,16 +17,23 @@ import { useFonts } from 'expo-font';
 
 
 
-function formatDate(dateString) {
-    const date = new Date(dateString); // Convert to Date object
+ 
   
-    const day = String(date.getUTCDate()).padStart(2, '0'); // Get day and pad if necessary
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Get month (1-based)
-    const year = date.getUTCFullYear(); // Get year
+function formatDate(isoString) {
+    const date = new Date(isoString);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+    const year = date.getUTCFullYear();
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    let hoursX = parseInt(hours);
   
-    return `${day}/${month}/${year}`; // Return in DD/MM/YYYY format
+    if(hoursX === "24" || hoursX === 24){
+      hoursX = "00"
+    }
+    
+    return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
   }
-
   
   
 

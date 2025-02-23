@@ -27,7 +27,11 @@ function formateDate(isoString) {
   const year = date.getUTCFullYear();
   const hours = String(date.getUTCHours()).padStart(2, '0');
   const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-  let hoursX = parseInt(hours)+1;
+  let hoursX = parseInt(hours);
+
+  if(hoursX === "24" || hoursX === 24){
+    hoursX = "00"
+  }
   
   return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
 }
@@ -40,8 +44,9 @@ export default function MesCalculs({ route }) {
     const [DATA, setDATA] = useState([]);
     const [isLoading, setIsLoading] = useState(true);  
     const animation = useRef(new Animated.Value(0)).current;  
- 
+    const [selectedButton, setSelectedButton] = useState('dateDesc');
     const navigation = useNavigation();
+    const flatListRef = useRef(null);
 
     const [fontsLoaded] = useFonts({
       'DMSerifDisplay': require('../fonts/DMSerifDisplay-Regular.ttf'),
@@ -52,52 +57,68 @@ export default function MesCalculs({ route }) {
   });
 
 
-        const fetchData = async () => {
-            try {
-                startWavyAnimation(); 
-                const token = await AsyncStorage.getItem('Token');
-                console.warn("------------Mes Calculs-------------")
-                const resp = await axios.get(`${ENDPOINT_URL}predictions`, {
-                  headers:{
-                    Authorization : `Bearer ${token}`
-                  }
-                });
-                if(resp.status === 200){
-                  const sortedData = resp.data.sort((a, b) => {
-                      const dateA = new Date(a.created_at);
-                      const dateB = new Date(b.created_at);
-                      return dateB - dateA;
-                  });
-                  setDATA(sortedData);
-                  console.warn(sortedData);
-                }
-                else{
-                  setDATA([]);
-                }
-            }
-            catch(e){
-              Alert.alert('Oups, une erreur est survenue lors de la récupération de vos données.')              
-              console.log(e.message);
-            }   
-            finally{
-              setIsLoading(false);
-            }
+
+  
+
+
+  const fetchData = async () => {
+    try {
+      startWavyAnimation(); 
+      const token = await AsyncStorage.getItem('Token');
+      const resp = await axios.get(`${ENDPOINT_URL}predictions`, {
+        headers:{
+          Authorization : `Bearer ${token}`
+        }
+      });
+      if (resp.status === 200) {
+        setDATA(resp.data);
+      } else {
+        setDATA([]);
       }
+    } catch (e) {
+      Alert.alert('Oups, une erreur est survenue lors de la récupération de vos données.');              
+      console.log(e.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
 
 
     useFocusEffect(
           useCallback(() => {  
-
             fetchData();
-            
             return () => {};  
         }, [])
     );
   
 
 
-
+    const sortByMostTomatoes = () => {
+      const sorted = [...DATA].sort((a, b) => b.classeTotale - a.classeTotale);
+      
+      setDATA(sorted);
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+      }
+    }
+  
+    const sortByDateAsc = () => {
+      const sorted = [...DATA].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      setDATA(sorted);
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+      }
+    }
+  
+    const sortByDateDesc = () => {
+      const sorted = [...DATA].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setDATA(sorted);
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+      }
+    }
 
 
 
@@ -246,7 +267,38 @@ if (!fontsLoaded) {
         </View>
 
        
+        <View style={styles.filterContainer}>
+          
+          <TouchableOpacity onPress={() =>{ 
+              setSelectedButton('dateDesc');
+              if(selectedButton !== "dateDesc"){
+                sortByDateDesc();
+              }
+            }} style={[styles.filterButton, selectedButton === 'dateDesc' && styles.selectedButton]}>
+            <Text style={[styles.filterText, selectedButton === 'dateDesc' && styles.selectedText]} >Plus récent</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity onPress={() =>{ 
+              setSelectedButton('dateAsc');
+              if(selectedButton !== "dateAsc"){
+                sortByDateAsc();
+              }
+            }} style={[styles.filterButton, selectedButton === 'dateAsc' && styles.selectedButton]}>
+            <Text style={[styles.filterText, selectedButton === 'dateAsc' && styles.selectedText]} >Plus ancien</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() =>{ 
+              setSelectedButton('mostTomatoes');
+              if(selectedButton !== "mostTomatoes"){
+                sortByMostTomatoes();
+              }
+            }}
+            
+            style={[styles.filterButton, selectedButton === 'mostTomatoes' && styles.selectedButton]}>
+            <Text style={[styles.filterText, selectedButton === 'mostTomatoes' && styles.selectedText]} >Plus de tomates</Text>
+          </TouchableOpacity>
+          
+        </View>
 
 
         {isLoading ? (
@@ -297,9 +349,13 @@ if (!fontsLoaded) {
                         alignItems : "center", 
                         justifyContent : "center", 
                       }} >
+                        
                         <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
-                          Aucune donnée
-                        </Text>
+                                    Aucune donnée...
+                                  </Text>
+                                  <Text style={{color : "gray", fontSize : 14, textAlign : "center", padding : 30, paddingTop : 13}}  >
+                                    Créez votre première prédiction en cliquant sur le bouton en haut à gauche.
+                                  </Text>
               </View>  
               :
             <>
@@ -307,6 +363,7 @@ if (!fontsLoaded) {
              
 
               <FlatList
+                  ref={flatListRef}
                   data={DATA}
                   renderItem={renderItem}
                   keyExtractor={(item) => item.id}
@@ -507,4 +564,42 @@ addButton2 : {
   alignItems: 'center',
   justifyContent: 'center',
 },
+
+filterContainer: {
+  flexDirection: 'row',
+  justifyContent: "space-between",
+  marginBottom: 20,
+  marginTop : 10, 
+  paddingLeft : 20, 
+  paddingRight : 20
+},
+filterButton: {
+  padding: 10,
+  paddingLeft : 15, paddingRight : 15, 
+  backgroundColor: '#f5f5f5',
+  borderRadius: 7,
+},
+
+selectedButton : {
+  backgroundColor: '#BE2929',
+  padding: 10,
+  paddingLeft : 15, paddingRight : 15, 
+  borderRadius: 7,
+
+},
+filterText: {
+  color: '#141414',
+  fontSize: 13.4,
+  fontFamily : "Inter", 
+  letterSpacing : -0.4
+},
+
+
+selectedText: {
+  color: 'white',
+  fontSize: 13.4,
+  fontFamily : "Inter", 
+  letterSpacing : -0.4
+},
+
 });

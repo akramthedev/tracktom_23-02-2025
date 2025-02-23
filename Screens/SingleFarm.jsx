@@ -25,7 +25,7 @@ function formateDate(isoString) {
     const year = date.getUTCFullYear();
     const hours = String(date.getUTCHours()).padStart(2, '0');
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    let hoursX = parseInt(hours)+1;
+    let hoursX = parseInt(hours);
     
     return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
   }
@@ -52,7 +52,8 @@ export default function SingleFarm({route}) {
     const [serres , setSerres] = useState([]);
     const [fermeName , setFermeName ] = useState(null);
     const [commune,setcommune] = useState("");
- 
+    const [dataRecovery, setdataRecovery] = useState(false);
+
         
 
         useFocusEffect(
@@ -89,6 +90,7 @@ export default function SingleFarm({route}) {
                             setCreatedAt(resp.data.fermes.created_at);
                             setSerres(resp.data.fermes.serres);
                             setcommune(resp.data.fermes.commune);
+                            setdataRecovery(resp.data.fermes);
                         }
                         
                          
@@ -111,15 +113,43 @@ export default function SingleFarm({route}) {
           
 
 
-    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+          const [isLoadingUpdate, setisLoadingUpdate] = useState(false);
+          const [isCanceling, setisCanceling] = useState(false);
+
+
+
+
+    const handleCancel = ()=>{
+        setisCanceling(true);
+        setFermeName(dataRecovery.nom_ferme);
+        setcommune(dataRecovery.commune) 
+        setisCanceling(false);
+    }
+
 
 
     const handleSaveData = async()=>{
-        setIsLoadingUpdate(true);
+
+
+     
+        if(fermeName === null || fermeName === "" || fermeName.length === 0){
+            Alert.alert('Le champ Appelation ne peut pas etre vide.')
+            return;
+        }
+
+
+        if(commune === null || commune === "" || commune.length === 0){
+            Alert.alert('Le champ Appelation ne peut pas etre vide.')
+            return;
+        }
+
+
+
+        setisLoadingUpdate(true);
         const token = await AsyncStorage.getItem('Token');
             try{
               let data = {
-                nom_ferme : fermeName, 
+                nom_ferme : fermeName ? fermeName : "--", 
                 commune : commune ? commune : "--"
               }
               
@@ -129,16 +159,16 @@ export default function SingleFarm({route}) {
                 }
               });
               if(resp.status === 200){
-                setIsLoadingUpdate(false);
+                setisLoadingUpdate(false);
                 setisModifyClicked(false);
               }
               else{
-                setIsLoadingUpdate(false);
+                setisLoadingUpdate(false);
                 Alert.alert("Une erreur est suvenue lors de la modification de la ferme.")
               }
             }
             catch(e){
-                setIsLoadingUpdate(false);
+                setisLoadingUpdate(false);
                 console.log(e.message);
               Alert.alert("Une erreur est suvenue lors de la modification de la ferme.")     
             } 
@@ -270,15 +300,15 @@ export default function SingleFarm({route}) {
                                         </TouchableOpacity>
                                         <TouchableOpacity 
                                             style={{
-                                                width: 30,
-                                                height: 30,
+                                                width: 40,
+                                                height: 40,
                                                 borderRadius: 20, 
                                                 backgroundColor: '#BE2929',
                                                 borderWidth : 1,
                                                 alignItems: 'center',
                                                 borderColor : "#BE2929",
                                                 justifyContent: 'center',
-                                                position : "absolute", left : 42
+                                                position : "absolute", left : 48
                                             }}
                                             disabled={isLoadingUpdate || isLoading}
                                             onPress={()=>{
@@ -299,22 +329,25 @@ export default function SingleFarm({route}) {
                                         <TouchableOpacity 
                                             style={styles.addButton222}
                                             onPress={handleSaveData}  
+                                            disabled={isLoadingUpdate}
                                         >
                                             <Feather name="check" size={17} color="#fff" />
                                         </TouchableOpacity>
                                         <TouchableOpacity 
                                             style={{
-                                                width: 30,
-                                                height: 30,
+                                                width: 40,
+                                                height: 40,
                                                 borderRadius: 20, 
                                                 backgroundColor: '#BE2929',
                                                 borderWidth : 1,
                                                 alignItems: 'center',
                                                 borderColor : "#BE2929",
                                                 justifyContent: 'center',
-                                                position : "absolute", left : 42
+                                                position : "absolute", left : 48
                                             }}
+                                            disabled={isCanceling}
                                             onPress={()=>{
+                                                handleCancel();
                                                 setisModifyClicked(false);
                                             }}  
                                         >
@@ -626,8 +659,8 @@ const styles = StyleSheet.create({
         marginBottom : 20,
     },
     addSerre : {
-        height : 30, 
-        width : 30, 
+        height : 40, 
+        width : 40, 
         backgroundColor : "#BE2929",
         borderRadius : 100,
         alignItems : "center", 
@@ -657,8 +690,9 @@ const styles = StyleSheet.create({
     },
 
     serresHeader : {
-        marginBottom: 15,
+        marginBottom: 20,
         flexDirection: "row",
+        alignItems : "center",
         justifyContent: "space-between",
     },
     skeletonImageContainer: { alignItems: 'center', marginBottom: 20 },
@@ -672,16 +706,16 @@ const styles = StyleSheet.create({
     skeletonSerre: { height: 40, borderRadius: 6, marginBottom: 10 },
 
     addButton222: {
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         backgroundColor: '#BE2929',
         alignItems: 'center',
         justifyContent: 'center',
       },
       addButton2222 : {
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         backgroundColor: 'white',
         alignItems: 'center',

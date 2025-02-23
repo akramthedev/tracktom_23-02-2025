@@ -68,11 +68,20 @@ export default function Login({ route }) {
    
           await AsyncStorage.setItem('Token', req.data.data.token);
           await AsyncStorage.setItem('created_at',req.data.data.user.created_at);
-          if(req.data.data.user.type === "admin"){
-            await AsyncStorage.setItem('user_type',req.data.data.user.user_type);
+          console.log(req.data.data.user);
+          console.log();
+          console.log(req.data.data.user.type)
+          if(req.data.data.user.type !== null && req.data.data.user.type !== undefined ){
+            if(req.data.data.user.type === "admin" || req.data.data.user.type === "superadmin"){
+              await AsyncStorage.setItem('user_type',req.data.data.user.type);
+            }
+            else{
+              await AsyncStorage.setItem('user_type',"NotAdmin");
+            }
           }
           else{
             await AsyncStorage.setItem('user_type',"NotAdmin");
+
           }
 
           setModalVisibleError(false);

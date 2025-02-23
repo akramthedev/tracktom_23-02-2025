@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     Image,
     ScrollView,
-    Animated,TextInput
+    Animated,TextInput,
+    Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import PopUpNavigate from "../Components/PopUpNavigate";
@@ -46,6 +47,7 @@ export default function Profil({route}) {
     const [companyName, setcompanyName] = useState(null);
     const [job , setJob] = useState(null);
 
+    const [dataRecovery,setDataRecovery] = useState(null);    
 
     const [userType, setUserType] = useState(null);  
     const [isLoading, setIsLoading] = useState(true); // Skeleton loading state
@@ -53,6 +55,8 @@ export default function Profil({route}) {
     const animation = useRef(new Animated.Value(0)).current;
 
            
+    const [isUpdating, setisUpdating] = useState(false);
+
 
 
 
@@ -87,7 +91,6 @@ export default function Profil({route}) {
                 ).start();
 
                 const token = await AsyncStorage.getItem('Token');
-                console.log("token  =====>",token);
     
                 const resp = await axios.get(`${ENDPOINT_URL}profile`, {
                   headers: {
@@ -95,13 +98,13 @@ export default function Profil({route}) {
                   }
                 });
                 if(resp.status === 200){
-                    console.log("Profile ===>",resp.data);
                     setfullName(resp.data.user.name);
                     setemail(resp.data.user.email);
                     setmobile(resp.data.user.telephone);
                     setcompanyName(resp.data.user.entreprise);
                     setUserType(resp.data.user.userType);
                     setJob(resp.data.user.job);
+
 
                     const createdATX = await AsyncStorage.getItem('created_at');
                     if(createdATX){
@@ -110,6 +113,7 @@ export default function Profil({route}) {
                     else{
                         setcreatedAt(null);
                     }
+                    setDataRecovery(resp.data.user);
 
                     await new Promise(resolve => setTimeout(resolve, 111));
                 }
@@ -127,9 +131,63 @@ export default function Profil({route}) {
         fetchData();
     }, []);
 
+
+    const [isCanceling, setisCanceling] = useState(false);
+
+
+    const handleCancel = ()=>{
+        setisCanceling(true);
+            console.log("---------------");
+            setfullName(dataRecovery.name);
+            console.log(dataRecovery.name);
+
+            setemail(dataRecovery.email);
+            console.log(dataRecovery.email);
+
+            setmobile(dataRecovery.telephone);
+            console.log(dataRecovery.telephone);
+
+            setcompanyName(dataRecovery.entreprise);
+            console.log(dataRecovery.entreprise);
+
+            setJob(dataRecovery.job);
+            setisCanceling(false);
+    }
+
+
     const handleSaveData = async()=>{
 
+        if(fullName.length === 0 || fullName === "" || fullName === null){
+            Alert.alert("Les champs Nom et Prénom ne peuvent pas etre vides.");
+            return;
+        }   
+
+        if(email.length === 0 || email === "" || email === null){
+            Alert.alert("Le champ email ne peut pas etre vide.");
+            return;
+        }   
+
+
+        if(mobile.length === 0 || mobile === "" || mobile === null){
+            Alert.alert("Le champ téléphone ne peut pas etre vide.");
+            return;
+        }   
+
+
+        if(companyName.length === 0 || companyName === "" || companyName === null){
+            Alert.alert("Le champ Intitulé ne peut pas etre vide.");
+            return;
+        }   
+
+
+        if(job.length === 0 || job === "" || job === null){
+            Alert.alert("Le champ Poste ne peut pas etre vide.");
+            return;
+        }   
+
+        
         const token = await AsyncStorage.getItem('Token');
+        setisUpdating(true);
             try{
               let data = {
                 name : fullName, 
@@ -145,7 +203,6 @@ export default function Profil({route}) {
                 }
               });
               if(resp.status === 200){
-                console.log("resp =====>",resp);
                 setisAtleastOneModified(false);
                 setisAtleastOneModified2(false);
                 setisModifyClicked(false);
@@ -153,8 +210,10 @@ export default function Profil({route}) {
             }
             catch(e){
               console.log(e.message);
-     
+              setisUpdating(false);
+                Alert.alert("Oups, une erreur est survenue lors de la modification de vos données.");
             } finally{
+                setisUpdating(false);
             }
        }
 
@@ -195,6 +254,7 @@ if (!fontsLoaded) {
                                         }}
                                     >
                                         <TouchableOpacity 
+                                            disabled={isUpdating}
                                             style={styles.addButton222}
                                             onPress={handleSaveData}  
                                         >
@@ -202,20 +262,22 @@ if (!fontsLoaded) {
                                         </TouchableOpacity>
                                         <TouchableOpacity 
                                             style={{
-                                                width: 30,
-                                                height: 30,
+                                                width: 40,
+                                                height: 40,
                                                 borderRadius: 20,
                                                 backgroundColor: '#BE2929',
                                                 borderWidth : 1,
                                                 borderColor : "#BE2929",
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                position : "absolute", left : 42
+                                                position : "absolute", left : 55
                                             }}
+                                            disabled={isCanceling}
                                             onPress={()=>{
+                                                setisModifyClicked(false);
                                                 setisAtleastOneModified(false);
                                                 setisAtleastOneModified2(false);
-                                                setisModifyClicked(false);
+                                                handleCancel();
                                             }}  
                                         >
                                             <Feather name="x" size={19} color="white" />
@@ -313,7 +375,7 @@ if (!fontsLoaded) {
                                     
 
                             <View style={styles.infoContainer}>
-                                <Text style={styles.sectionTitle}>Informations personnelles{isAtleastOneModified &&<Text style={styles.titleX} >&nbsp;&nbsp;(Édité)</Text>}</Text>
+                                <Text style={styles.sectionTitle}>Informations personnelles{isAtleastOneModified &&<Text style={styles.titleX} >&nbsp;&nbsp;* Modifié </Text>}</Text>
                                 <View style={styles.infoRow}>
                                     <Text style={styles.label}>&nbsp;Nom et prénom :</Text>
                                     {
@@ -376,7 +438,7 @@ if (!fontsLoaded) {
                                 <>
                                     <View  style={styles.HRHR}  />
                                     <View style={styles.infoContainer}>
-                                        <Text style={styles.sectionTitle}>Entreprise agricole{isAtleastOneModified2 &&<Text style={styles.titleX} >&nbsp;&nbsp;(Édité)</Text>}</Text>
+                                        <Text style={styles.sectionTitle}>Entreprise agricole{isAtleastOneModified2 &&<Text style={styles.titleX} >&nbsp;&nbsp;* Modifié </Text>}</Text>
                                         <View style={styles.infoRow}>
                                             <Text style={styles.label}>&nbsp;Intitulé :</Text>
                                             {
@@ -590,16 +652,16 @@ const styles = StyleSheet.create({
         textAlign : "center"
     },
     addButton: {
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         backgroundColor: '#BE2929',
         alignItems: 'center',
         justifyContent: 'center',
       },
       addButton2 : {
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         backgroundColor: 'white',
         alignItems: 'center',
@@ -664,8 +726,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     addButton222: {
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         backgroundColor: '#BE2929',
         alignItems: 'center',

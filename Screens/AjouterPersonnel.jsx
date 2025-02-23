@@ -232,6 +232,7 @@ export default function AjouterPersonnel() {
                         onChangeText={setPhone}
                         placeholder="Veuillez saisir le numéro de téléphone..."
                         keyboardType="phone-pad"
+                        onSubmitEditing={() => Keyboard.dismiss()}
                     />
 
 

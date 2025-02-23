@@ -45,18 +45,20 @@ function formateDate(isoString) {
 function formatPoids(kg) {
   // Vérifier que kg est un nombre valide
   if (typeof kg !== 'number' || isNaN(kg)) {
-    return 'Valeur invalide';
+    return '--';
   }
+
+  let KKGG = parseFloat(kg);
   
   // Si le poids est supérieur ou égal à 1000 kg, on affiche en tonnes
-  if (kg >= 500) {
+  if (KKGG >= 500) {
     // Calculer le poids en tonnes
-    const tonnes = kg / 1000;
+    const tonnes = KKGG / 1000;
     // Afficher avec 2 décimales, et ajuster le pluriel si nécessaire
     return tonnes.toFixed(1) + (tonnes > 1 ? ' t' : ' t');
   } else {
     // Sinon, on affiche le poids en kilogrammes
-    return kg.toFixed(1) + 'Kg';
+    return KKGG.toFixed(1) + 'Kg';
   }
 }
 
@@ -114,7 +116,7 @@ export default function DashBoard({ route }) {
     classe_E: 0,
     classe_F: 0
   });
-  
+  const [isLoadingCustomizingData, setIsLoadingCustomizingData] = useState(false);
 
 
   const defaultData = {
@@ -146,21 +148,18 @@ export default function DashBoard({ route }) {
 
 
   const combineGreenhouseData = (greenhouse, predictionId) => {
-    // 1. Handle case where there are no predictions
-    if (!greenhouse.predictions?.length) return JSON.parse(JSON.stringify(defaultData)); // Deep clone default data
+    if (!greenhouse.predictions?.length) return JSON.parse(JSON.stringify(defaultData)); 
   
-    // 2. Handle specific prediction selection
     if (predictionId) {
       const prediction = greenhouse.predictions.find(p => p.id === predictionId);
-      if (!prediction) return JSON.parse(JSON.stringify(defaultData)); // Return cloned default data
+      if (!prediction) return JSON.parse(JSON.stringify(defaultData)); 
   
-      // 3. Ensure we have valid tomatoColors and rawTomatoCounts
       const predictionColors = prediction.tomatoColors || {};
       const rawCounts = prediction.rawTomatoCounts || {};
   
       return {
         totalTomatoes: Math.round(prediction.totalTomatoes || 0),
-        plants: Math.round(prediction.plants || 0),
+        plants: prediction.plants || 0,
         tomatoColors: Object.fromEntries(
           Object.entries(predictionColors).map(([key, val]) => 
             [key, Math.round(typeof val === 'number' ? val : 0)]
@@ -174,28 +173,23 @@ export default function DashBoard({ route }) {
       };
     }
   
-    // 4. Aggregate all predictions
     return greenhouse.predictions.reduce((acc, prediction) => {
-      // 5. Ensure we have valid numbers for all properties
       const predColors = prediction.tomatoColors || {};
       const predRawCounts = prediction.rawTomatoCounts || {};
   
       acc.plants += Number(prediction.plants) || 0;
       acc.totalTomatoes += Number(prediction.totalTomatoes) || 0;
   
-      // 6. Process tomato colors
       Object.keys(acc.tomatoColors).forEach(key => {
         acc.tomatoColors[key] += Number(predColors[key]) || 0;
       });
-  
-      // 7. Process raw counts
+
       Object.keys(acc.rawTomatoCounts).forEach(key => {
         acc.rawTomatoCounts[key] += Number(predRawCounts[key]) || 0;
       });
   
       return acc;
     }, 
-    // 8. Proper initial value with deep clone
     JSON.parse(JSON.stringify(defaultData)));
   };
 
@@ -344,7 +338,7 @@ export default function DashBoard({ route }) {
               classe_F: parseInt(p.traitement_videos_sum_classe6) || 0,
             },
             totalTomatoes,
-            plants: p.stemsDetected || 0,
+            plants: X_PRIME * Y_PRIME,
             X: X_PRIME,  
             Z: Z_PRIME,  
           };
@@ -431,46 +425,63 @@ export default function DashBoard({ route }) {
 
 
 
+
+
+
+  const CustomizingData = async ()=>{
+      
+    setIsLoadingCustomizingData(true);
+
+    console.log("A executed...");
+
+    if (data.length === 0) return;
+
+      let newData;
+      if (selectedFarmIndex === -1) {
+        newData = combineAllData(data);
+      } else if (selectedGreenhouseIndex === -1) {
+        newData = combineFarmData(data[selectedFarmIndex]);
+      } else {
+        const greenhouse = data[selectedFarmIndex].serres[selectedGreenhouseIndex];
+        newData = combineGreenhouseData(greenhouse, selectedPredictionId);
+      }
+
+
+      if(newData){
+        if(newData.totalTomatoes){
+          if(parseInt(newData.totalTomatoes) > 9999){
+            setunitéChoisieValue(1000);
+            setUnitéChoisie("tonnes.");
+          }
+          else{
+            setUnitéChoisie("kilogramme.");
+            setunitéChoisieValue(1);
+          }
+        }
+      }
+
+      const roundedColors = Object.fromEntries(
+        Object.entries(newData.tomatoColors).map(([key, val]) => [key, Math.round(val)])
+      );
+
+      const roundedRawCounts = Object.fromEntries(
+        Object.entries(newData.rawTomatoCounts).map(([key, val]) => [key, Math.round(val)])
+      );
+
+      setSelectedData({ ...newData, tomatoColors: roundedColors });
+      setTomatoColors(roundedColors);
+      setRawTomatoCounts(roundedRawCounts);
+
+      setIsLoadingCustomizingData(false);
+
+  }
+
  
- useEffect(() => {
-  if (data.length === 0) return;
+  useEffect(() => {
+  
+    CustomizingData();
 
-  let newData;
-  if (selectedFarmIndex === -1) {
-    newData = combineAllData(data);
-  } else if (selectedGreenhouseIndex === -1) {
-    newData = combineFarmData(data[selectedFarmIndex]);
-  } else {
-    const greenhouse = data[selectedFarmIndex].serres[selectedGreenhouseIndex];
-    newData = combineGreenhouseData(greenhouse, selectedPredictionId);
-  }
-
-
-  if(newData){
-    if(newData.totalTomatoes){
-      if(parseInt(newData.totalTomatoes) > 9999){
-        setunitéChoisieValue(1000);
-        setUnitéChoisie("tonnes.");
-      }
-      else{
-        setUnitéChoisie("kilogramme.");
-        setunitéChoisieValue(1);
-      }
-    }
-  }
-  // Round the final values
-  const roundedColors = Object.fromEntries(
-    Object.entries(newData.tomatoColors).map(([key, val]) => [key, Math.round(val)])
-  );
-
-  const roundedRawCounts = Object.fromEntries(
-    Object.entries(newData.rawTomatoCounts).map(([key, val]) => [key, Math.round(val)])
-  );
-
-  setSelectedData({ ...newData, tomatoColors: roundedColors });
-  setTomatoColors(roundedColors);
-  setRawTomatoCounts(roundedRawCounts);
-}, [selectedFarmIndex, selectedGreenhouseIndex,selectedPredictionId, data]);
+  }, [selectedFarmIndex, selectedGreenhouseIndex,selectedPredictionId, data]);
 
 
 
@@ -629,6 +640,7 @@ const [fontsLoaded] = useFonts({
             <Text style={styles.modalTitle}>Filtrez par ferme et serre :</Text>
 
             <Picker
+              
               selectedValue={selectedFarmIndex}
               onValueChange={(value) => {
                 setSelectedFarmIndex(value);
@@ -641,8 +653,10 @@ const [fontsLoaded] = useFonts({
                   setNameSelectedFarm(nameOfFarm);
                 }
               }}
-              style={{ backgroundColor: '#F1F1F1', marginBottom: 10 }}
-            >
+              style={{
+                backgroundColor: '#F1F1F1',
+                marginBottom: 10,
+              }}            >
               <Picker.Item label="Toutes les Fermes" value={-1} />
               {data.map((farm, index) => (
                 <Picker.Item key={farm.id} label={farm.farmName} value={index} />
@@ -674,14 +688,21 @@ const [fontsLoaded] = useFonts({
 
             <TouchableOpacity
               style={styles.closeButton}
+              disabled={isLoadingCustomizingData || isLoading}
               onPress={() => {
                 setIsPopupVisible(false);
                 if(selectedFarmIndex !== -1 && selectedFarmIndex !== "-1"){
-                  setIsPopUp___Predictions___Visibile(true);
+                  if(selectedGreenhouseIndex !== -1 && selectedGreenhouseIndex !== "-1"){
+                    setIsPopUp___Predictions___Visibile(true);
+                  }
                 }
               }}
             >
-              <Text style={styles.closeButtonText}>Sauvegarder</Text>
+              <Text style={styles.closeButtonText}>
+                {
+                  isLoadingCustomizingData ? "Enregistrement..." : "Enregistrer"
+                }
+              </Text>
             </TouchableOpacity>
           </View> 
         </View>
@@ -710,7 +731,7 @@ const [fontsLoaded] = useFonts({
               selectedPredictions.length === 0 ? 
               <View 
                 style={{
-                  height : 340, 
+                  height : 100, 
                   alignItems : "center", 
                   justifyContent : "center",
                 }}
@@ -753,7 +774,7 @@ const [fontsLoaded] = useFonts({
                           </Text>
                         </View>
                         <View style={{
-                          paddingRight : 20
+                          paddingRight : 10
                         }} >
                           <Ionicons 
                             name="chevron-forward" 
@@ -825,7 +846,7 @@ const [fontsLoaded] = useFonts({
                           }
                         </View>
                         <View style={{
-                          paddingRight : 20
+                          paddingRight : 10
                         }} >
                           <Ionicons 
                             name="chevron-forward" 
@@ -839,6 +860,8 @@ const [fontsLoaded] = useFonts({
                 }
               </ScrollView>
             }
+            
+ 
           </View> 
         </View>
       </Modal>
@@ -891,7 +914,7 @@ const [fontsLoaded] = useFonts({
 
         <View style={styles.cardContainer}>
             {/* Card for Total Tomatoes */}
-            <View style={styles.card}>
+            <View style={styles.card2}>
               <View  style={{ borderRadius: 10, height: "100%", width: "100%" }}>
                 <View style={styles.cardIcon}>
                   <Image
@@ -940,19 +963,43 @@ const [fontsLoaded] = useFonts({
         }} >
         
           <TouchableOpacity
-            style={[styles.toggleButton, chartType === "Pie" && styles.activeButton, styles.buttonPie]}
-            onPress={() => setChartType("Pie")}
-          >
-            <Text style={[styles.toggleButtonText, chartType === "Pie" && styles.activeButtonText]} >Circulaire</Text>
-          </TouchableOpacity>
-
-
-          <TouchableOpacity
             style={[styles.toggleButton, chartType === "Bar" && styles.activeButton, styles.buttonbar]}
             onPress={() => setChartType("Bar")}
           >
-            <Text style={[styles.toggleButtonText, chartType === "Bar" && styles.activeButtonText]}  >Bars</Text>
+            {
+              chartType === "Bar" &&
+            <Text style={{
+              paddingTop : 3
+            }} >
+            
+              <Ionicons name="checkmark" size={20} color="#fff" />
+            &nbsp;
+            </Text>
+            }
+            <Text style={[styles.toggleButtonText, chartType === "Bar" && styles.activeButtonText]}  >
+              Bars
+            </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.toggleButton, chartType === "Pie" && styles.activeButton, styles.buttonPie]}
+            onPress={() => setChartType("Pie")}
+          >
+            {
+            chartType === "Pie" &&
+            <Text style={{
+              paddingTop : 3
+            }} >
+              <Ionicons name="checkmark" size={20} color="#fff" />
+            &nbsp;
+            </Text>
+            }
+            <Text style={[styles.toggleButtonText, chartType === "Pie" && styles.activeButtonText]} >
+              Circulaire
+            </Text>
+          </TouchableOpacity>
+
+
 
         </View>
 
@@ -977,7 +1024,7 @@ const [fontsLoaded] = useFonts({
             onPress={() => setIsPopupVisible(true)}
             disabled={Array.isArray(data) && (data === null || data.length === 0)}
           >
-            <MaterialCommunityIcons name="filter" size={19} color="rgb(59, 59, 59)" style={{textAlign : "center"}} />
+            <MaterialCommunityIcons name="filter" size={19} color="white" style={{textAlign : "center"}} />
           </TouchableOpacity>
         </View>
       </View>
@@ -1048,12 +1095,22 @@ const [fontsLoaded] = useFonts({
                 marginTop : 10
               }}            
             >
-              <Text style={{
-                fontSize : 14, 
-                fontFamily : "Inter", 
-                color :"rgb(88, 88, 88)"
-            }} >
-              Répartition des tomates en {unitéChoisie}
+                <Text style={{
+                  fontSize : 14, 
+                  fontFamily : "Inter", 
+                  color :"rgb(88, 88, 88)"
+                }} >
+                  Répartition des tomates en&nbsp;
+                  <Text
+                    style={{
+                      fontSize : 14, 
+                      fontFamily : "Inter", 
+                      color :"#BE2929", 
+                      fontWeight : "bold"
+                  }} 
+                  >
+                  {unitéChoisie}
+                </Text>
               </Text>
             </View>
 
@@ -1072,17 +1129,17 @@ const [fontsLoaded] = useFonts({
                   label: `C${number.toString()}`,
                 };
               })}
-              barWidth={48}
+              barWidth={44}
               spacing={6}
               height={screenHeight * 0.328}
-              width={screenWidth - 55}
+              width={screenWidth - 60}
               noOfSections={5}  
               yAxisThickness={0}  
               xAxisThickness={0}  
               xAxisLabelTextStyle={{ color: "gray", fontSize: 14 }}    
               showValuesAsTopLabel={true}
-              topLabelTextStyle={{ color:"gray", fontSize:13, fontWeight: "bold" }} 
-              yAxisTextStyle={{ fontSize:13, color: "gray", fontWeight: "bold" }}
+              topLabelTextStyle={{ color:"gray", fontSize:11, fontWeight: "bold" }} 
+              yAxisTextStyle={{ fontSize:11, color: "gray", fontWeight: "bold" }}
             />
 
 
@@ -1127,21 +1184,7 @@ const [fontsLoaded] = useFonts({
                 </Text>
               </View>
             }
-            <View
-              style={{
-                marginTop : 10, 
-                alignItems : "center", 
-                justifyContent :"center"
-              }}            
-            >
-              <Text style={{
-                fontSize : 14, 
-                fontFamily : "Inter", 
-                color :"rgb(88, 88, 88)"
-            }} >
-              Répartition des tomates en {unitéChoisie}
-              </Text>
-            </View>
+           
 
             <CustomizedPieChart
               tomatoColors={rawTomatoCounts}
@@ -1247,13 +1290,13 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: "white",
     paddingLeft : 20,
+    paddingRight : 20, 
     fontSize: 13,
-    paddingRight : 20
   },
 
   cardIcon : {
     paddingLeft : 20,
-    height : '30%',
+    height : '35%',
     alignItems : "flex-start", justifyContent : "flex-end"
   },
   imageLoggo : {
@@ -1264,9 +1307,10 @@ const styles = StyleSheet.create({
   cardValue: {
     color: "#fff",
     fontSize: 33,
-    paddingTop : 15,
+    paddingTop : 10,
     paddingLeft : 20,
-    fontFamily:  "InriaBold", height : "50%", textAlign : "left"
+    paddingRight : 20,
+    fontFamily:  "InriaBold", height : "40%", textAlign : "left"
   },
   buttonRow: {
     flexDirection: "row",
@@ -1284,6 +1328,8 @@ const styles = StyleSheet.create({
   },
   activeButton: {
     backgroundColor: "#BE2929",
+    flexDirection : "row", 
+    alignItems : "center"
   },
   toggleButtonText: {
     color: "#141414",
@@ -1294,6 +1340,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
     fontFamily: "Inter",
+    alignItems : "center", 
+    justifyContent : "center", 
+    flexDirection : "row"
   },
   ellipsisButton: {
     borderRadius : 40, 
@@ -1308,7 +1357,7 @@ const styles = StyleSheet.create({
     height : 40, 
     width : 40,
     alignItems : "center",justifyContent : "center",
-    backgroundColor : "#F1F1F1"
+    backgroundColor : "#BE2929"
   },
   modalContainer: {
     flex: 1, // Covers the full screen
@@ -1336,12 +1385,12 @@ const styles = StyleSheet.create({
     paddingTop : 20, 
     paddingBottom : 0, 
     paddingRight : 0, 
-    paddingLeft : 20, 
+    paddingLeft : 10, 
     borderRadius: 10,
     elevation: 5,
     maxHeight : 450,
     minHeight : 200, 
-    position : "relative"
+    position : "relative", 
   },
   modalTitle: {
     fontSize: 18,
@@ -1459,7 +1508,7 @@ const styles = StyleSheet.create({
 
 buttonPie : {
   width : 109, 
-  marginRight : 15
+  marginLeft : 10
 },
 buttonbar : {
   width : "auto",

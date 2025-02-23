@@ -257,8 +257,11 @@ if (!fontsLoaded) {
                                                                         justifyContent : "center", 
                                                                       }} >
                                                                         <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
-                                                                          Aucune donnée
-                                                                        </Text>
+                                                                                                            Aucune donnée...
+                                                                                                          </Text>
+                                                                                                          <Text style={{color : "gray", fontSize : 14, textAlign : "center", padding : 30, paddingTop : 13}}  >
+                                                                                                            Créez votre premier personnel en cliquant sur le bouton en haut à gauche.
+                                                                                                          </Text>
                                                               </View>  
                                                               :
                                                               <FlatList

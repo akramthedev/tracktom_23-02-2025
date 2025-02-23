@@ -14,7 +14,6 @@ import { useFonts } from 'expo-font';
 
 
 
-
 function formateDate(isoString) {
     const date = new Date(isoString);
     const day = String(date.getUTCDate()).padStart(2, '0');
@@ -22,7 +21,11 @@ function formateDate(isoString) {
     const year = date.getUTCFullYear();
     const hours = String(date.getUTCHours()).padStart(2, '0');
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    let hoursX = parseInt(hours)+1;
+    let hoursX = parseInt(hours);
+  
+    if(hoursX === "24" || hoursX === 24){
+      hoursX = "00"
+    }
     
     return `${hoursX}:${minutes} - ${day}/${month}/${year}`;
   }

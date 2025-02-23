@@ -63,8 +63,6 @@ export default function MesFermes({ route }) {
       >
         <View style={styles.infosContainer}>
           <Text style={styles.textInfos1}>{item.nom_ferme}</Text>
-          {/* <Text style={styles.textInfos2}>17 tiges / mètre</Text> */}
-          <Text style={styles.textInfos3}>{item.commune ? item.commune : "--"}</Text>
           <Text style={styles.textInfos3}>{item.serres.length} Serres</Text>
           <Text style={styles.textInfos3}>{item.created_at ? formateDate(item.created_at) : "--"}</Text>
         </View>
@@ -252,9 +250,12 @@ export default function MesFermes({ route }) {
                                                         alignItems : "center", 
                                                         justifyContent : "center", 
                                                       }} >
-                                                        <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
-                                                          Aucune donnée
-                                                        </Text>
+                                                       <Text style={{color : "gray", fontSize : 14, textAlign : "center"}}  >
+                                                                                           Aucune donnée...
+                                                                                         </Text>
+                                                                                         <Text style={{color : "gray", fontSize : 14, textAlign : "center", padding : 30, paddingTop : 13}}  >
+                                                                                           Créez votre première ferme en cliquant sur le bouton en haut à gauche.
+                                                                                         </Text>
                                               </View>  
                                               :
                                               <FlatList
