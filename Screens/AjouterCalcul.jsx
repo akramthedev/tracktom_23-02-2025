@@ -371,11 +371,11 @@ export default function AjouterCalcul() {
 
 
     useEffect(() => {
-        if (progressUpload >= 96 && textUpload === "Analyse des données en cours...") {
+        if (progressUpload >= 98 && textUpload === "Analyse des données en cours...") {
             setTimeout(() => {
                 setProgressUpload(100);
                 navigation.navigate("MesCalculs")
-            }, 3000);  
+            }, 8888);  
         }
     }, [progressUpload]);
 

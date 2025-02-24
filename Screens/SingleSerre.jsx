@@ -87,13 +87,15 @@ export default function SingleSerre({route}) {
     const [Nombre__X, setNombre__X] = useState("");
     const [Nombre__XRecovery, setNombre__XRecovery] = useState("");
     const navigation = useNavigation();
-    const { id, created_at, nameSerre, poids_fruit, nbr_tiger} = route.params; 
+    const { id, created_at, nameSerre, poids_fruit, nbr_tiger, total_tiges} = route.params; 
     const [isLoading, setIsLoading] = useState(false);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const skeletonAnimation = useRef(new Animated.Value(0)).current;
     const [isDeleting, setisDeleting] = useState(false);
     const [PoidsMoyen, setPoidsMoyen] = useState("");
     const [PoidsMoyenRecovery, setPoidsMoyenRecovery] = useState("");
+    const [NombreTotalTigesDeTouteLaSerre___RECOVERY, setNombreTotalTigesDeTouteLaSerre___RECOVERY] = useState("");
+    const [NombreTotalTigesDeTouteLaSerre, setNombreTotalTigesDeTouteLaSerre] = useState("");
 
 
 
@@ -160,12 +162,22 @@ export default function SingleSerre({route}) {
                         PF = parseInt(poids_fruit);
                     }
 
+                    let NTTTS = 0;
+                    if(total_tiges === null){
+                        NTTTS = 0;
+                    }
+                    else{
+                        NTTTS = parseInt(total_tiges);
+                    }
+
 
                     setAppelation(nameSerre);
                     setPoidsMoyen(PF);
                     setPoidsMoyenRecovery(PF);
                     setNombre__X(NT);
                     setNombre__XRecovery(NT);
+                    setNombreTotalTigesDeTouteLaSerre(NTTTS);
+                    setNombreTotalTigesDeTouteLaSerre___RECOVERY(NTTTS);
 
                 } catch (error) {
                     console.error("Error fetching data:", error);
@@ -198,6 +210,7 @@ export default function SingleSerre({route}) {
         setNombre__X(Nombre__XRecovery);
         setPoidsMoyen(PoidsMoyenRecovery);
         setAppelation(nameSerre);
+        setNombreTotalTigesDeTouteLaSerre(NombreTotalTigesDeTouteLaSerre___RECOVERY);
         setCancel(false);
     }
 
@@ -223,6 +236,7 @@ export default function SingleSerre({route}) {
 
         const XXX = Nombre__X ? parseInt(Nombre__X) || 0 : 0;
         const PM = PoidsMoyen ? parseInt(PoidsMoyen) || 0 : 0;
+        const NTTX = NombreTotalTigesDeTouteLaSerre ? parseInt(NombreTotalTigesDeTouteLaSerre) || 0 : 0;
 
 
         setIsLoadingUpdates(true);
@@ -231,7 +245,8 @@ export default function SingleSerre({route}) {
               let data = {
                 name: appelation?.toString() || "",
                 nbr_tiger: XXX,
-                poids_fruit: PM
+                poids_fruit: PM, 
+                total_tiges : NTTX
             }
               
               const resp = await axios.put(`${ENDPOINT_URL}serres/${id}`, data, {
@@ -416,7 +431,7 @@ if (!fontsLoaded) {
 
                         <View style={styles.detailsContainer}>
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>Appelation :</Text>
+                                <Text style={styles.TitleLabel}>Appelation </Text>
                                 {
                                         !isModifyClicked ? 
                                         <Text style={styles.value}>{appelation}</Text>
@@ -432,7 +447,7 @@ if (!fontsLoaded) {
                                     }
                             </View>
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>Nombre de tiges par mètre :</Text>
+                                <Text style={styles.TitleLabel}>Nombre de tiges par mètre</Text>
                                 {
                                         !isModifyClicked ? 
                                         <Text style={styles.value}>{Nombre__X !== null && Nombre__X !== "" ? Nombre__X : 0} tiges</Text>
@@ -456,7 +471,31 @@ if (!fontsLoaded) {
 
 
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>Poids moyen de fruit : </Text>
+                                <Text style={styles.TitleLabel}>Nombre total de tiges </Text>
+                                {
+                                        !isModifyClicked ? 
+                                        <Text style={styles.value}>{NombreTotalTigesDeTouteLaSerre !== null && NombreTotalTigesDeTouteLaSerre !== "" ? NombreTotalTigesDeTouteLaSerre : 0} tiges</Text>
+                                        :
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="Entrez le nombre..."
+                                            keyboardType="number-pad"
+                                            onChangeText={(text) => {
+                                                if (/^\d*$/.test(text)) { // Vérifie si le texte contient uniquement des chiffres
+                                                setNombreTotalTigesDeTouteLaSerre(text); // Met à jour l’état
+                                                } else {
+                                                Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                                                }
+                                            }}
+                                            value={NombreTotalTigesDeTouteLaSerre.toString()}
+                                            onSubmitEditing={() => Keyboard.dismiss()}
+                                        />
+                                }
+                            </View>
+
+
+                            <View style={styles.ViewLabel}>
+                                <Text style={styles.TitleLabel}>Poids moyen de fruit </Text>
                                 {
                                         !isModifyClicked ? 
                                         <Text style={styles.value}>{PoidsMoyen !== null && PoidsMoyen !== "" ? PoidsMoyen : 0} grammes</Text>
@@ -480,7 +519,7 @@ if (!fontsLoaded) {
 
 
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>Date de création :</Text>
+                                <Text style={styles.TitleLabel}>Date de création</Text>
                                 <Text style={styles.value}>
                                     {
                                         created_at && formatDate(created_at)

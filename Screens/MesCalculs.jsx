@@ -75,6 +75,7 @@ export default function MesCalculs({ route }) {
       });
       if (resp.status === 200) {
         setDATA(resp.data);
+        console.log(resp.data[0].videos[0]);
         setisLoading2(false);
         setIsLoading(false);  
       } else {
@@ -177,7 +178,7 @@ export default function MesCalculs({ route }) {
             traitement_videos_sum_classe4 : item.traitement_videos_sum_classe4,
             traitement_videos_sum_classe5 : item.traitement_videos_sum_classe5,
             traitement_videos_sum_classe6 : item.traitement_videos_sum_classe6,
-            traitement_videos_sum_classe7 : item.traitement_videos_sum_classe7
+            videoName : item.videos.length !== 0 ? item.videos[0] : null
           });
         }}
         style={styles.card}
@@ -288,7 +289,7 @@ if (!fontsLoaded) {
               </TouchableOpacity> 
           }
           <Text style={styles.title}>
-            Mes Calculs
+            Mes Prédictions
           </Text>
           <TouchableOpacity 
             onPress={() => setIsPopupVisible(!isPopupVisible)}

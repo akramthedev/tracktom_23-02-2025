@@ -7,11 +7,14 @@ import {
     TouchableOpacity,
     Animated,
     Modal,
+    Linking,
+    Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Feather, Ionicons } from '@expo/vector-icons'; 
 import { useFonts } from 'expo-font';
-
+import {ENDPOINT_URL} from "../App";
+import {DOWNLOAD_URL} from "../App";
 
 
 function formateDate(isoString) {
@@ -63,6 +66,7 @@ export default function SingleCalcul({route}) {
         traitement_videos_sum_classe4 ,
         traitement_videos_sum_classe5 ,
         traitement_videos_sum_classe6 ,
+        videoName
     } = route.params; 
 
     const [isLoading, setIsLoading] = useState(false);
@@ -77,6 +81,28 @@ export default function SingleCalcul({route}) {
     const [animatedValue5, setAnimatedValue5] = useState(0);
     const [animatedValue6, setAnimatedValue6] = useState(0);
  
+
+
+
+
+
+    
+  const downloadVideo = async () => {
+
+    console.log(videoName);
+
+    try {
+      const downloadUrl = `${DOWNLOAD_URL}${videoName}`;
+      
+      await Linking.openURL(downloadUrl);
+
+    } catch (error) {
+    console.error('Error opening video in browser:', error);
+    Alert.alert("Une erreur est survenue lors du téléchargement de la vidéo...");
+   }
+  }
+
+
 
 
 
@@ -246,7 +272,7 @@ if (!fontsLoaded) {
                     >
                         <Ionicons name="chevron-back" size={24} color="#141414" />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Détails Calcul</Text>
+                    <Text style={styles.title}>Détails Prédiction</Text>
                     <TouchableOpacity 
                         onPress={() => setIsPopupVisible(!isPopupVisible)}
                         style={styles.elipsisButton}
@@ -323,7 +349,7 @@ if (!fontsLoaded) {
                                 <Text style={styles.valueHighlight}>{stemsDetected ? stemsDetected : 0}&nbsp;tiges&nbsp;&nbsp;</Text>
                             </View>
                             <View style={styles.ViewLabel}>
-                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Date du calcul :</Text>
+                                <Text style={styles.TitleLabel}>&nbsp;&nbsp;Date de prédiction :</Text>
                                 <Text style={styles.value}>{created_at ? formateDate(created_at) : "--"}&nbsp;&nbsp;</Text>
                             </View>
                             <View style={styles.HRHR} />
@@ -507,13 +533,17 @@ if (!fontsLoaded) {
                     </>
                 )}
 
-                            {/* <TouchableOpacity style={styles.deleteButton}
+                {
+                    videoName !== null && videoName !== undefined && 
+                    <TouchableOpacity style={styles.deleteButton}
                                 onPress={()=>{
-                                    setisDeleteClicked(true);
+                                    downloadVideo();
                                 }}
                             >
-                                <Text style={styles.deleteButtonText}>Supprimer le calcul</Text>
-                            </TouchableOpacity> */}
+                                <Feather name="download" size={19} color="rgb(255, 255, 255)" style={{textAlign : "center", marginRight : 8}} />
+                                <Text style={styles.deleteButtonText}>Télécharger la vidéo</Text>
+                            </TouchableOpacity>
+                }
         </View>
     </>
     );
@@ -615,19 +645,21 @@ const styles = StyleSheet.create({
         color: '#141414',
     },
     deleteButton: {
-        backgroundColor: '#FDECEC',
+        backgroundColor: '#BE2929',
         borderRadius: 8,
         paddingVertical: 15,
         alignItems: 'center',
         position : "absolute", 
         bottom : 20,
         left : 20, 
-        width : "100%"
+        width : "100%", 
+        alignItems : "center", 
+        flexDirection : "row", justifyContent : "center"
     },
     deleteButtonText: {
         fontFamily : 'Inter',
         fontSize: 15,
-        color: '#BE2929',
+        color: '#ffffff',
     },
     modalOverlay: {
         flex: 1,
@@ -711,6 +743,19 @@ const styles = StyleSheet.create({
         justifyContent : "space-between", 
         flexDirection : "row"
     },  
-
+    downloadButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor:"#BE2929",
+        borderRadius: 11,
+        borderWidth : 0, 
+        borderColor : "transparent",
+        height : 55, 
+        marginTop: 16.167,
+      },
+      downloadButtonText : {
+        color : "white"
+      }
 });
 

@@ -26,8 +26,12 @@
   import SingleDemande from './Screens/SingleDemande';
   import ProfilOthers from './Screens/ProfilOthers';
 
+
+
+
   const Stack = createNativeStackNavigator();
   export const ENDPOINT_URL = "https://track-tom-test.pcs-agri.com/api/";
+  export const DOWNLOAD_URL = "https://ws-tracktom-test.pcs-agri.com/download/";
 
 
   export default function App() {

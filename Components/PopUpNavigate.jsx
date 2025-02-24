@@ -316,7 +316,7 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
                                     <MaterialCommunityIcons name="square-root" size={24} color="#BE2929" />
                                 </View>
                                 <Text style={styles.popupText}>
-                                    Mes Calculs
+                                    Mes Prédictions
                                 </Text>
                             </View>
                             <Ionicons name="chevron-forward" size={18} color="#141414" />

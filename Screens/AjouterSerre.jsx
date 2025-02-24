@@ -66,6 +66,7 @@ export default function AjouterSerre({route}) {
     const [NameSerre,setNameSerre] = useState("");
     const [Nombre_Tiges_Total,setNombre_Tiges_Total] = useState("");
     const [PoidsMoyen,setPoidsMoyen] = useState("");
+    const [Nombre_Tiges_Total_De_Toute_La_Serre, setNombre_Tiges_Total_De_Toute_La_Serre] = useState("");
 
     const { idFerme } = route.params;
     const [isLoading,setloading] = useState(false);
@@ -78,8 +79,9 @@ export default function AjouterSerre({route}) {
 
     const handleSubmit = async () => {
 
-        let NTT = 0;
-        let PM = 0;
+        let NTT = 1;
+        let PM = 1;
+        let NTTDTS = 111;
 
         if (!NameSerre) {
             Alert.alert("Le nom de la serre est obligatoire.");
@@ -97,10 +99,17 @@ export default function AjouterSerre({route}) {
 
 
         if(PoidsMoyen === ""){
-            PM = 1;  
+            PM = 1;     
         }
         else{
             PM = parseFloat(PoidsMoyen);
+        }
+ 
+        if(Nombre_Tiges_Total_De_Toute_La_Serre === ""){
+            NTTDTS = 1;  
+        }
+        else{
+            NTTDTS = parseInt(Nombre_Tiges_Total_De_Toute_La_Serre);
         }
 
         try{
@@ -109,24 +118,23 @@ export default function AjouterSerre({route}) {
 
             let data = {
                 name : NameSerre, 
-                ferme_id : idFerme, 
+                poids_fruit : PM, 
                 nbr_tiger : NTT, 
-                poids_fruit : PM
+                total_tiges : NTTDTS,
+                ferme_id : idFerme, 
             }
 
-            console.log("data" , data);
 
             const resp = await axios.post(`${ENDPOINT_URL}serres`, data, {
               headers: {
                 'Authorization': `Bearer ${token}`
               }
             });
-            console.log("resp Serre ===>" ,resp);
             if(resp.status === 201){
-                console.log(resp.data);
                 setNameSerre("");
                 setNombre_Tiges_Total("");
                 setPoidsMoyen("");
+                setNombre_Tiges_Total_De_Toute_La_Serre("");
                 setloading(false);
                 navigation.goBack();
             }
@@ -226,6 +234,26 @@ export default function AjouterSerre({route}) {
                     onChangeText={(text) => {
                         if (/^\d*$/.test(text)) { 
                             setNombre_Tiges_Total(text); 
+                        } else {
+                        Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
+                        }
+                    }}
+                />
+
+
+
+                <Text style={styles.label}>
+                    Nombre total de tiges
+                </Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder='Entrez le nombre total de tiges..'
+                    keyboardType="number-pad"
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                                        value={Nombre_Tiges_Total_De_Toute_La_Serre.toString()}
+                    onChangeText={(text) => {
+                        if (/^\d*$/.test(text)) { 
+                            setNombre_Tiges_Total_De_Toute_La_Serre(text); 
                         } else {
                         Alert.alert("Erreur", "Veuillez entrer uniquement des chiffres.");
                         }

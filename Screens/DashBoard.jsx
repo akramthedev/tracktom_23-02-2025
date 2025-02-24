@@ -7,7 +7,8 @@ import {
   ScrollView,ImageBackground,
   TouchableOpacity,
   Modal,Image,
-  Alert
+  Alert,
+  Linking
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';  
@@ -20,6 +21,7 @@ import { Dimensions } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 import { useNavigation } from '@react-navigation/native';
+import {DOWNLOAD_URL} from "../App";
 
 
 
@@ -110,6 +112,7 @@ export default function DashBoard({ route }) {
   const [IsPopUp___Predictions___Visibile, setIsPopUp___Predictions___Visibile] = useState(false);
   const [selectedPredictions, setSelectedPredictions] = useState([]);
   const [selectedPredictionId, setSelectedPredictionId] = useState(null);
+  const [selectedPredictionVideo, setselectedPredictionVideo] = useState(null);
   const [NameSelectedPrediction, setNameSelectedPrediction] = useState("all");
   const [rawTomatoCounts, setRawTomatoCounts] = useState({
     classe_A: 0,
@@ -145,7 +148,6 @@ export default function DashBoard({ route }) {
 
 
  
-  console.log("Total Tomatoes:", selectedData?.totalTomatoes);
 
 
 
@@ -311,7 +313,7 @@ export default function DashBoard({ route }) {
   
           const totalTomatoes = Object.values(tomatoColors).reduce((a, b) => a + b, 0);
   
-
+          
           return {
             id: p.id,
             createdAt : p.created_at && p.created_at, 
@@ -324,6 +326,7 @@ export default function DashBoard({ route }) {
             nom_serre : p.serre.name && p.serre.name,
             superficie : p.superficie && p.superficie,
             stemsDetected : p.stemsDetected && p.stemsDetected,
+            videoName : p.videos.length !== 0 && p.videos[0],
             traitement_videos_sum_classe1 : p.traitement_videos_sum_classe1 &&  p.traitement_videos_sum_classe1,
             traitement_videos_sum_classe2 : p.traitement_videos_sum_classe2 &&  p.traitement_videos_sum_classe2,
             traitement_videos_sum_classe3 : p.traitement_videos_sum_classe3 &&  p.traitement_videos_sum_classe3,
@@ -436,7 +439,6 @@ export default function DashBoard({ route }) {
       
     setIsLoadingCustomizingData(true);
 
-    console.log("A executed...");
 
     if (data.length === 0) return;
 
@@ -529,7 +531,23 @@ useEffect(() => {
 
 
 
+  const downloadVideo = async () => {
 
+    console.log(selectedPredictionVideo);
+
+    try {
+
+
+      const downloadUrl = `${DOWNLOAD_URL}${selectedPredictionVideo}`;
+      
+      await Linking.openURL(downloadUrl);
+      Alert.alert('Téléchargement de la vidéo...');
+
+    } catch (error) {
+    console.error('Error opening video in browser:', error);
+    Alert.alert("Une erreur est survenue lors du téléchargement de la vidéo...");
+   }
+  }
 
 
 
@@ -652,6 +670,7 @@ const [fontsLoaded] = useFonts({
                 setNameSelectedSerre("");
                 setSelectedGreenhouseIndex(-1); 
                 setSelectedPredictionId(null);
+                setselectedPredictionVideo(null);
                 if(value !== -1 && value !== "-1"){
                   let nameOfFarm = data[value]?.farmName;
                   setNameSelectedFarm(nameOfFarm);
@@ -673,6 +692,7 @@ const [fontsLoaded] = useFonts({
                 onValueChange={(value) => {
                   setSelectedGreenhouseIndex(value);
                   setSelectedPredictionId(null);
+                  setselectedPredictionVideo(null);
                   setNameSelectedPrediction("all");
                   let nameOfSerre = data[selectedFarmIndex]?.serres[value]?.name;  
                   setNameSelectedSerre(nameOfSerre);
@@ -762,6 +782,7 @@ const [fontsLoaded] = useFonts({
                     onPress={() => {
                       setNameSelectedPrediction("all");
                       setSelectedPredictionId(null);
+                      setselectedPredictionVideo(null);
                       setIsPopUp___Predictions___Visibile(false);
                     }}
                   >
@@ -807,6 +828,9 @@ const [fontsLoaded] = useFonts({
                         onPress={()=>{
                           setIsPopUp___Predictions___Visibile(false);
                           setSelectedPredictionId(predict.id);
+                          if(predict.videoName !== null && predict.videoName !== undefined){
+                            setselectedPredictionVideo(predict.videoName);
+                          }
                           setNameSelectedPrediction(`Prédiction ${index+1}`);
                           // navigation.navigate('SingleCalcul',
                           //   {
@@ -1013,11 +1037,11 @@ const [fontsLoaded] = useFonts({
           flexDirection : "row"
         }} >
           {
-            NameSelectedPrediction !== "all" && selectedPredictionId !== null && 
+            NameSelectedPrediction !== "all" && selectedPredictionId !== null && selectedPredictionVideo !== null && selectedPredictionVideo !== undefined && 
             <TouchableOpacity
               style={styles.ellipsisButton}
               onPress={() =>{
-                Alert.alert("Téléchargement du fichier vidéo pour la "+NameSelectedPrediction);
+                downloadVideo();
               }}
               disabled={Array.isArray(data) && (data === null || data.length === 0) && (NameSelectedPrediction !== "all" && selectedPredictionId !== null )}
             >
@@ -1496,8 +1520,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   LoaderSvgImg : {
-    height : 50,           //hello ? 
-    width : 50, 
+    height : 40,           //hello ? 
+    width : 40, 
     zIndex : 99
   },
 

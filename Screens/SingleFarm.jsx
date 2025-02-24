@@ -192,6 +192,7 @@ export default function SingleFarm({route}) {
                     nameSerre : item.name, 
                     poids_fruit : item.poids_fruit,
                     nbr_tiger : item.nbr_tiger,
+                    total_tiges : item.total_tiges
                 })
 
             }}
