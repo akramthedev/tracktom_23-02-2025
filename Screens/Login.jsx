@@ -91,6 +91,7 @@ export default function Login({ route }) {
       } catch (error) {
         setLoading(false);
         setMessageError("Error occurred while logging in.");
+        console.log(error);
         setModalVisibleError(true);
         console.log("error  ====>",error);
       }
@@ -177,7 +178,7 @@ export default function Login({ route }) {
               </Text>
               <View style={styles.passwordContainer}>
                 <TextInput
-                    style={styles.input}
+                    style={styles.input2}
                     placeholder="Veuillez saisir votre mot de passe..."
                     placeholderTextColor="gray"
                     secureTextEntry={!showPassword}
@@ -365,19 +366,27 @@ const styles = StyleSheet.create({
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     borderRadius: 8,
     height: 48,
-    paddingLeft: 13,
-    paddingRight: 10,
-    position : "relative"
+    position : "relative", 
+    backgroundColor : "blue"
   },
   inputPassword: {
     flex: 1,
     fontSize: 14,
     fontFamily: 'Inter',
-  },
 
+  },
+  input2 : {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    height : 48,
+    paddingRight : 13,
+    paddingLeft : 13,
+    fontSize: 14,
+    width : "100%",
+    fontFamily: 'Inter',
+  }
 });
 
 

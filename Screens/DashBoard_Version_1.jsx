@@ -299,15 +299,25 @@ export default function DashBoard({ route }) {
             ? parseInt(p.superficie)
             : 1;
   
+          // const tomatoColors = {
+          //   classe_A: Math.round(((parseInt(p.traitement_videos_sum_classe1) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
+          //   classe_B: Math.round(((parseInt(p.traitement_videos_sum_classe2) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
+          //   classe_C: Math.round(((parseInt(p.traitement_videos_sum_classe3) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
+          //   classe_D: Math.round(((parseInt(p.traitement_videos_sum_classe4) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
+          //   classe_E: Math.round(((parseInt(p.traitement_videos_sum_classe5) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
+          //   classe_F: Math.round(((parseInt(p.traitement_videos_sum_classe6) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
+          // };
+
+
           const tomatoColors = {
-            classe_A: Math.round(((parseInt(p.traitement_videos_sum_classe1) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
-            classe_B: Math.round(((parseInt(p.traitement_videos_sum_classe2) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
-            classe_C: Math.round(((parseInt(p.traitement_videos_sum_classe3) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
-            classe_D: Math.round(((parseInt(p.traitement_videos_sum_classe4) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
-            classe_E: Math.round(((parseInt(p.traitement_videos_sum_classe5) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
-            classe_F: Math.round(((parseInt(p.traitement_videos_sum_classe6) || 0) * X_PRIME * Y_PRIME * Z_PRIME / 1000)),
-          };
-  
+            classe_A: parseFloat((((parseInt(p.traitement_videos_sum_classe1) || 0) * Z_PRIME / 1000)).toFixed(2)),
+            classe_B: parseFloat((((parseInt(p.traitement_videos_sum_classe2) || 0) * Z_PRIME / 1000)).toFixed(2)),
+            classe_C: parseFloat((((parseInt(p.traitement_videos_sum_classe3) || 0) * Z_PRIME / 1000)).toFixed(2)),
+            classe_D: parseFloat((((parseInt(p.traitement_videos_sum_classe4) || 0) * Z_PRIME / 1000)).toFixed(2)),
+            classe_E: parseFloat((((parseInt(p.traitement_videos_sum_classe5) || 0) * Z_PRIME / 1000)).toFixed(2)),
+            classe_F: parseFloat((((parseInt(p.traitement_videos_sum_classe6) || 0) * Z_PRIME / 1000)).toFixed(2)),
+        };
+        
           
 
   
@@ -1153,7 +1163,7 @@ const [fontsLoaded] = useFonts({
                 const divisor = unitéChoisieValue && unitéChoisieValue !== 0 ? unitéChoisieValue : 1;
 
                 return {
-                  value: Math.round((value / divisor) * 10) / 10,
+                  value: (value / divisor),
                   frontColor: classColors[key] || "#CCCCCC",
                   label: `C${number.toString()}`,
                 };
@@ -1847,7 +1857,7 @@ const styles = StyleSheet.create({
 },
 
 buttonPie : {
-  width : 109, 
+  width : 90, 
   marginLeft : 10
 },
 buttonbar : {

@@ -148,7 +148,7 @@ export default function AjouterPersonnel() {
     
         catch(e){
             setisLoading(false);
-
+            Alert.alert("Oups, une erreur est survenue lors de la création de votre personnel.");
             console.log("error Personnel ===>",e);
         } finally{
             setisLoading(false);

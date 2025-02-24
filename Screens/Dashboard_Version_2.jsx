@@ -1847,7 +1847,7 @@ const styles = StyleSheet.create({
 },
 
 buttonPie : {
-  width : 109, 
+  width : 90, 
   marginLeft : 10
 },
 buttonbar : {
