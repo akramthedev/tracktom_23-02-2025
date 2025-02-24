@@ -65,18 +65,7 @@ export default function MesPersonnels({ route }) {
 
 
 
-
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //         try {
-  //             setIsLoading(true);
-  //             startWavyAnimation();
-  //         } finally {
-  //             setIsLoading(false);
-  //         }
-  //     };
-  //     fetchData();
-  // }, []);
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,6 +102,7 @@ export default function MesPersonnels({ route }) {
     const renderItem = ({ item }) => (
       <TouchableOpacity 
         onPress={()=>{
+          console.log(item);
           navigation.navigate('ProfilOthers', 
             {
               id : item.id, 
@@ -120,7 +110,8 @@ export default function MesPersonnels({ route }) {
               fullName : item.user.name, 
               image : item.user.image, 
               email : item.user.email, 
-              createdAt : item.created_at
+              createdAt : item.created_at, 
+              fromPage : "MesPersonnels"
             });
         }}
         style={styles.card}

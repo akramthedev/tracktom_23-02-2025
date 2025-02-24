@@ -73,9 +73,9 @@ export default function MesCalculs({ route }) {
           Authorization : `Bearer ${token}`
         }
       });
+      console.log(resp.data);
       if (resp.status === 200) {
         setDATA(resp.data);
-        console.log(resp.data[0].videos[0]);
         setisLoading2(false);
         setIsLoading(false);  
       } else {

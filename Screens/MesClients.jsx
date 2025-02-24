@@ -97,6 +97,7 @@ export default function MesClients({ route }) {
                         entrepriseName: item.entreprise,
                         job:item.job,
                         createdAt: item.created_at,
+                        fromPage : "MesClients"
                     });
                 } else {
                     navigation.navigate('ProfilOthers', {

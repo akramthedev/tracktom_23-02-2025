@@ -27,8 +27,8 @@ export default function Login({ route }) {
 
     const { setIsAuthenticated } = useAuth();
 
-    const [email, setEmail] = useState('elmehdi.moubachir@pcs-agri.com');
-    const [password, setPassword] = useState('elmehdi.moubachir@pcs-agri.com');
+    const [email, setEmail] = useState('elmehdi.moubachir@pcs-agri.com'); //akram@gmail.com
+    const [password, setPassword] = useState('elmehdi.moubachir@pcs-agri.com'); //Akram2001
     const [messageError , setMessageError] = useState(null);
     const [modalVisibleError , setModalVisibleError] = useState(false);
     const [modalVisible , setModalVisible] = useState(false);
@@ -64,8 +64,6 @@ export default function Login({ route }) {
 
         if (req.status === 200) {
           setLoading(false);
-         
-   
           await AsyncStorage.setItem('Token', req.data.data.token);
           await AsyncStorage.setItem('created_at',req.data.data.user.created_at);
           if(req.data.data.user.user_type !== null && req.data.data.user.user_type !== undefined ){

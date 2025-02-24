@@ -9,11 +9,13 @@ import {
     Animated,
     TextInput
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import PopUpNavigate from "../Components/PopUpNavigate";
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-
+import axios from 'axios';
+import {ENDPOINT_URL} from '../App';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 function formatDate(dateString) {
@@ -31,7 +33,7 @@ function formatDate(dateString) {
 export default function ProfilOthers({route}) {
 
     const navigation = useNavigation();
-    const { id, type,tailleEquipe, fullName, email, mobile, entrepriseName, entrepriseEmail, entrepriseMobile, isGF, isGC, isVR,job, createdAt  } = route.params;
+    const { id, type,tailleEquipe, fullName, email, mobile, entrepriseName, entrepriseEmail, entrepriseMobile, isGF, isGC, isVR,job, createdAt, fromPage  } = route.params;
     const animation = useRef(new Animated.Value(0)).current;
     const [isModifyClicked, setisModifyClicked] = useState(false);
     const [isAtleastOneModified, setisAtleastOneModified] = useState(false);
@@ -68,7 +70,8 @@ export default function ProfilOthers({route}) {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     
-
+    const [IsLoadingDelete, setIsLoadingDelete]=useState(false);
+    
 
 
     const toggleAnimation = (value, setValue, animatedValue) => {
@@ -156,6 +159,37 @@ export default function ProfilOthers({route}) {
 
 
 
+    const deleteStaff = async ()=>{
+        try{
+            if(id){
+
+                setIsLoadingDelete(true);
+
+                const token = await AsyncStorage.getItem('Token');
+                console.warn(token);
+                console.log(`${ENDPOINT_URL}staff/${id}`);
+                console.log();
+                await axios.delete(`${ENDPOINT_URL}staff/${id}`, {
+                    headers:{
+                      Authorization : `Bearer ${token}`
+                    }
+                });
+                setIsLoadingDelete(false);
+
+                navigation.navigate("MesPersonnels");
+
+
+            }
+        }
+        catch(e){
+            setIsLoadingDelete(false);
+            console.log(e.message);
+        }
+    }
+
+
+
+
 
     if (!fontsLoaded) {
         return null;
@@ -174,63 +208,42 @@ export default function ProfilOthers({route}) {
 
                         <View style={styles.header}>
 
+
                             {/* {
-                                !isLoading ? 
-                                <>
-                                {
-                                    !isModifyClicked ?  
-                                    <TouchableOpacity 
-                                        style={styles.addButton}
-                                        onPress={()=>{
-                                            setisModifyClicked(true);
-                                        }}  
-                                    >
-                                        <Feather name="edit-2" size={16} color="#fff" />
-                                    </TouchableOpacity> 
-                                    :
-                                    <View
-                                        style={{
-                                            position : "relative"
-                                        }}
-                                    >
+                                fromPage !== undefined && fromPage !== null && 
+                                    <>
+                                    {
+                                        IsLoadingDelete ? 
+                                        <>
+
+                                        </>
+
+                                        :
+
                                         <TouchableOpacity 
-                                            style={styles.addButton222}
+                                            style={styles.addButton}
                                             onPress={()=>{
-                                                setisAtleastOneModified(false);
-                                                setisAtleastOneModified2(false);
-                                                setisModifyClicked(false);
+                                                if(fromPage === "MesClients"){
+                                                    return;
+                                                }
+                                                deleteStaff();
                                             }}  
+                                            disabled={IsLoadingDelete}
                                         >
-                                            <Feather name="check" size={19} color="#fff" />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity       
-                                            style={{
-                                                width: 30,
-                                                height: 30,
-                                                borderRadius: 20,
-                                                backgroundColor: '#BE2929',
-                                                borderWidth : 1,
-                                                borderColor : "#BE2929",
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                position : "absolute", left : 42
-                                            }}
-                                            onPress={()=>{
-                                                setisAtleastOneModified(false);
-                                                setisAtleastOneModified2(false);
-                                                setisModifyClicked(false);
-                                            }}  
-                                        >
-                                            <Feather name="x" size={19} color="white" />
-                                        </TouchableOpacity>
-                                    </View>
-                                }
-                                </>
-                                :
-                                <TouchableOpacity style={styles.addButton2} />
+                                            <Feather name="trash" size={16} color="#fff" />
+                                        </TouchableOpacity> 
+                                    }
+                                    </>
                             } */}
 
-                            <TouchableOpacity style={styles.addButton2} />
+                            <TouchableOpacity 
+                                                    style={styles.returnButton}
+                                                    onPress={() => {
+                                                        navigation.goBack();
+                                                    }}
+                                                >
+                                                    <Ionicons name="chevron-back" size={24} color="#141414" />
+                                                </TouchableOpacity>
 
                             <Text style={styles.title}>
                                 Profil
@@ -367,8 +380,6 @@ export default function ProfilOthers({route}) {
                                     </View>
 
                                 </View>
-
-
 
 
                                 {/* { 
