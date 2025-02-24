@@ -246,11 +246,16 @@ export default function Register({ route }) {
 
 
                         <Text style={styles.infos}>
-                            En créant un compte, vous reconnaissez avoir lu et accepté&nbsp;&nbsp;
+                            En créant un compte, vous reconnaissez avoir lu et accepté&nbsp;
                             <Text 
                               style={styles.linkText} 
                               onPress={() => navigation.navigate('TermsAndConditions')}>
-                              notre politique.
+                              les conditions d'utilisation
+                            </Text> et &nbsp;
+                            <Text 
+                              style={styles.linkText} 
+                              onPress={() => navigation.navigate('Politique')}>
+                              la politique de confidentialité
                             </Text>
                         </Text>
 

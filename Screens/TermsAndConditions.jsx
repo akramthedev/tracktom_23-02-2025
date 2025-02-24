@@ -28,7 +28,7 @@ export default function TermsAndConditions({ route }) {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.title}>
-            CONDITIONS GÉNÉRALES D’UTILISATON
+            Les conditions d’utilisation
         </Text>
 
         <Text style={styles.footer}>
@@ -57,7 +57,7 @@ export default function TermsAndConditions({ route }) {
         &nbsp;&nbsp;&nbsp;• L’utilisation du formulaire de contact
         </Text>
         <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp;• La demande de démonstratio
+        &nbsp;&nbsp;&nbsp;• La demande de démonstration
         </Text>
         <Text  style={styles.articleBody}>
         &nbsp;&nbsp;&nbsp;• La demande d’aide
@@ -65,6 +65,8 @@ export default function TermsAndConditions({ route }) {
 
         
       </View>
+
+
       <View style={{
         backgroundColor :"rgb(180, 180, 180)", 
         height : 1, 

@@ -8,7 +8,7 @@
   import Home from './Screens/Home';
   import Login from './Screens/Login';
   import Register from './Screens/Register';
-  import Dashboard from './Screens/DashBoard';
+  import Dashboard from './Screens/DashBoard_Version_1';
   import MesCalculs from './Screens/MesCalculs';
   import SingleCalcul from './Screens/SingleCalcul';
   import AjouterCalcul from './Screens/AjouterCalcul';
@@ -25,8 +25,7 @@
   import NouvellesDemandes from './Screens/NouvellesDemandes';
   import SingleDemande from './Screens/SingleDemande';
   import ProfilOthers from './Screens/ProfilOthers';
-
-
+  import Politique from './Screens/Politique';
 
 
   const Stack = createNativeStackNavigator();
@@ -61,12 +60,14 @@
               <Stack.Screen name="Login" component={Login} />
               <Stack.Screen name="Register" component={Register} />
               <Stack.Screen name="TermsAndConditions" component={TermsAndConditions} />
+              <Stack.Screen name="Politique" component={Politique} />
             </>
           ) : (
             <>
               <Stack.Screen name="Dashboard" component={Dashboard} />
               <Stack.Screen name="MesCalculs" component={MesCalculs} />
               <Stack.Screen name="TermsAndConditions" component={TermsAndConditions} />
+              <Stack.Screen name="Politique" component={Politique} />
               <Stack.Screen name="SingleCalcul" component={SingleCalcul} />
               <Stack.Screen name="AjouterCalcul" component={AjouterCalcul} />
               <Stack.Screen name="Profil" component={Profil} />

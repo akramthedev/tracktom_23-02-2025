@@ -27,8 +27,9 @@ export default function Login({ route }) {
 
     const { setIsAuthenticated } = useAuth();
 
-    const [email, setEmail] = useState('elmehdi.moubachir@pcs-agri.com'); //akram@gmail.com
-    const [password, setPassword] = useState('elmehdi.moubachir@pcs-agri.com'); //Akram2001
+    const [email, setEmail] = useState('akram@gmail.com');  
+    const [password, setPassword] = useState('Akram2001'); 
+    const [showPassword, setShowPassword] = useState(false);
     const [messageError , setMessageError] = useState(null);
     const [modalVisibleError , setModalVisibleError] = useState(false);
     const [modalVisible , setModalVisible] = useState(false);
@@ -171,17 +172,22 @@ export default function Login({ route }) {
             </View>
 
             <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>
-                Mot de passe <Text style={styles.required}>*</Text>
-            </Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Veuillez saisir votre mot de passe..."
-                placeholderTextColor="gray"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-            />
+              <Text style={styles.inputPassword}>
+                  Mot de passe <Text style={styles.required}>*</Text>
+              </Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Veuillez saisir votre mot de passe..."
+                    placeholderTextColor="gray"
+                    secureTextEntry={!showPassword}
+                    value={password}
+                    onChangeText={setPassword}
+                />
+                <TouchableOpacity style={{position : "absolute", right : 10}} onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color="gray" />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.lastContainer} >
@@ -355,4 +361,23 @@ const styles = StyleSheet.create({
     height : 53, 
     marginTop: 20,
   },
+
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    height: 48,
+    paddingLeft: 13,
+    paddingRight: 10,
+    position : "relative"
+  },
+  inputPassword: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'Inter',
+  },
+
 });
+
+

@@ -46,7 +46,7 @@ export default function Home({ route }) {
         
         
         <ImageBackground
-          source={require('./farm.png')}
+          source={require('../images/tomato.jpg')}
           style={styles.background}
         >
         <View style={styles.overlay}>
@@ -59,7 +59,8 @@ export default function Home({ route }) {
 
             <Text style={styles.title}>TRACK TOM</Text>
             <Text style={styles.subtitle}>
-            Votre compagnon idéal pour un suivi précis et sans stress de vos tomates ! Faites grandir vos tomates, faites grandir votre passion !
+            Votre allié technologique pour une estimation de récolte précise.
+
             </Text>
 
             <View style={styles.lastContainer} >
@@ -69,7 +70,7 @@ export default function Home({ route }) {
                       navigation.navigate('Login');
                     }}
                 >
-                  <Text style={styles.buttonText}>Accéder à mon potager virtuel</Text>
+                  <Text style={styles.buttonText}>Connectez vous</Text>
                   <Ionicons name="chevron-forward" size={19} color="#fff"  style={{position : "absolute", top : 17, right : 20}} />
                 </TouchableOpacity>
             </View>
@@ -81,7 +82,7 @@ export default function Home({ route }) {
                       navigation.navigate('Register');
                     }}
                 >
-                  <Text style={styles.buttonText}>Créer mon espace personnel</Text>
+                  <Text style={styles.buttonText}>Créer un compte</Text>
                   <Ionicons name="chevron-forward" size={19} color="#fff"  style={{position : "absolute", top : 17, right : 20}} />
                 </TouchableOpacity>
             </View>
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.80)', 
     padding: 20,
     paddingBottom : 20, 
     paddingTop : 0,

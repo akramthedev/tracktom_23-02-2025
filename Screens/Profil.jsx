@@ -175,7 +175,7 @@ export default function Profil({route}) {
 
 
         if(companyName.length === 0 || companyName === "" || companyName === null){
-            Alert.alert("Le champ Intitulé ne peut pas etre vide.");
+            Alert.alert("Le champ Société ne peut pas etre vide.");
             return;
         }   
 
@@ -432,15 +432,19 @@ if (!fontsLoaded) {
                                     <Text style={styles.value}>{createdAt !== null && createdAt !== undefined && createdAt !== "" ? formatDate(createdAt) : "--" }&nbsp;&nbsp;</Text>
                                 </View>
                             </View>
-
                             {
-                                userType === "admin" || userType === "super_admin" ? (
+                                userType && 
+                                <>
+
+                              
+                            {
+                                userType === "admin" || userType === "super_admin" && 
                                 <>
                                     <View  style={styles.HRHR}  />
                                     <View style={styles.infoContainer}>
                                         <Text style={styles.sectionTitle}>Entreprise agricole{isAtleastOneModified2 &&<Text style={styles.titleX} >&nbsp;&nbsp;* Modifié </Text>}</Text>
                                         <View style={styles.infoRow}>
-                                            <Text style={styles.label}>&nbsp;Intitulé :</Text>
+                                            <Text style={styles.label}>&nbsp;Société :</Text>
                                             {
                                                 !isModifyClicked ? 
                                                 <Text style={styles.value}>{companyName}&nbsp;&nbsp;</Text>
@@ -475,7 +479,10 @@ if (!fontsLoaded) {
                                         </View>
                                     </View>
                                 </>
-                                ):null
+                                 
+                            }
+
+</>
                             }
 
                         </>
