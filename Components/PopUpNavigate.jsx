@@ -111,7 +111,7 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
                             style={styles.closeButton}
                             onPress={() => setIsPopupVisible(false)}
                         >
-                            <Ionicons name="close" size={26} color="#141414" />
+                            <Ionicons name="close" size={26} color="rgb(46, 46, 46)" />
                         </TouchableOpacity>
                     </View>
                     <ScrollView  style={styles.popupContent}>
@@ -464,12 +464,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: "flex-end",
         justifyContent : "flex-end",
-        height : "10%",
+        height : "6.5%",
         paddingHorizontal : 20,
     },
     popupContent: {
-        height : "90%",
-        paddingTop : "15%",
+        height : "100%",
+        paddingTop : "20%"
     },
     popupText: {
         color: '#141414',
