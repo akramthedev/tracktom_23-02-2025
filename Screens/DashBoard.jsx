@@ -1229,11 +1229,11 @@ const [fontsLoaded] = useFonts({
               style={{
 
                 position: "absolute", 
-                right : 20, top : 40, backgroundColor : "#000000A0", height : 40, width : 40, borderRadius : 50,zIndex :30, alignItems : "center", justifyContent : "center"
+                right : 20, top : 40, backgroundColor : "white", height : 40, width : 40, borderRadius : 50,zIndex :30, alignItems : "center", justifyContent : "center"
 
               }} 
           >
-            <Ionicons name="menu" size={23} color="white" style={{textAlign : "center"}}  />
+            <Ionicons name="menu" size={23} color="#141414" style={{textAlign : "center"}}  />
           </TouchableOpacity> 
         }
 
@@ -1241,7 +1241,7 @@ const [fontsLoaded] = useFonts({
             Aucune donnée...
           </Text>
           <Text style={{color : "gray", fontSize : 14, textAlign : "center", padding : 30, paddingTop : 13}}  >
-            Votre Tableau de board est vide. Créez une prédiction et revenez ici ! 
+            Votre tableau de board est vide. Créez une prédiction et revenez ici ! 
           </Text>
 
           <TouchableOpacity style={styles.createButton} onPress={()=>{

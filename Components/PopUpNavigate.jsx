@@ -52,18 +52,17 @@ export default function PopUpNavigate({isPopupVisible,setIsPopupVisible}) {
                 const userType = await AsyncStorage.getItem('user_type');
                 console.warn(userType);
                 if(userType !== null && userType !== undefined){
-                    if(userType === "superadmin"){
+                    if(userType === "super_admin"){
                         setisSuperAdmin(true);
+                        setisAdmin(true);
+                    }
+                    else if(userType === "admin"){
+                        setisSuperAdmin(false);
                         setisAdmin(true);
                     }
                     else{
                         setisSuperAdmin(false);
-                        if(userType === "admin"){
-                            setisAdmin(true);
-                        }
-                        else{
-                            setisAdmin(false);
-                        }
+                        setisAdmin(false);
                     }
                 }
                 else{

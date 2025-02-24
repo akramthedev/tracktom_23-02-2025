@@ -424,7 +424,7 @@ export default function AjouterCalcul() {
                             marginBottom : 6, 
                             textAlign : "center"
                         }}>
-                            Cela peut prendre un peu de temps
+                            Cela peut durer un moment
                         </Text>
                         <View style={styles.progressContainer}>
                             <View style={{height:15 , width:'100%',borderColor:"#eee",borderStyle:"solid",borderWidth:1,position:"relative"}}>
