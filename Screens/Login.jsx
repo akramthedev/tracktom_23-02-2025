@@ -27,8 +27,8 @@ export default function Login({ route }) {
 
     const { setIsAuthenticated } = useAuth();
 
-    const [email, setEmail] = useState('akram@gmail.com');  
-    const [password, setPassword] = useState('Akram2001'); 
+    const [email, setEmail] = useState('');  
+    const [password, setPassword] = useState(''); 
     const [showPassword, setShowPassword] = useState(false);
     const [messageError , setMessageError] = useState(null);
     const [modalVisibleError , setModalVisibleError] = useState(false);

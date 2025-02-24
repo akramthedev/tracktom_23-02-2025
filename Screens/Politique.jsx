@@ -28,51 +28,12 @@ export default function Politique({ route }) {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.title}>
-            La politique de confidentialité
-        </Text>
-
-      
-
-        <Text style={styles.articleTitle}>ARTICLE 1 : OBJET</Text>
-        <Text style={styles.articleBody}>
-          Les présentes CGU ou Conditions Générales d’Utilisation encadrent juridiquement l’utilisation des services du site pcs-agri.com et les applications mobile et web de PCS AGRI...
-        </Text>
-
-        <Text style={styles.articleTitle}>ARTICLE 2 : MENTION LÉGALES</Text>
-        <Text style={styles.articleBody}>
-          L’édition du site est assurée par l'entreprise PCS AGRI immatriculée au Registre du Commerce d'Agadir sous le numéro 51395 et dont le siège social est sis à app n° 15 lot 29 cité haut founty, Agadir...
-        </Text>
-
-        <Text style={styles.articleTitle}>ARTICLE 3 : ACCÈS AU SITE</Text>
-        <Text style={styles.articleBody}>
-          Le site permet d’accéder gratuitement aux services suivants : 
-        </Text>
-        <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp;• La demande des devis
-        </Text>
-        <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp;• L’utilisation du formulaire de contact
-        </Text>
-        <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp;• La demande de démonstratio
-        </Text>
-        <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp;• La demande d’aide
-        </Text>
-
-        
-      </View>
-      <View style={{
-        backgroundColor :"rgb(180, 180, 180)", 
-        height : 1, 
-        width : "100%", 
-        marginBottom : 30, 
-        marginTop : 30
-      }}  />
-        <View style={styles.container}>
-        <Text style={styles.title}>
         Politique de protection de données personnelles RGPD et Loi 09-08
         </Text>
+      </View>
+       
+        <View style={styles.container}>
+    
 
         <Text style={styles.articleTitle}>Préambule :</Text>
         <Text style={styles.articleBody}>

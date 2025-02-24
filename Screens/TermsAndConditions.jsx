@@ -63,222 +63,135 @@ export default function TermsAndConditions({ route }) {
         &nbsp;&nbsp;&nbsp;• La demande d’aide
         </Text>
 
+
+
+        <Text style={styles.articleTitle}>ARTICLE 4 :  COLLECTE DES DONNÉES</Text>
+        <Text style={styles.articleBody}>
+        Voir la politique de protection des données personnelles .
+
+</Text>
+
+
+
+
+
+
+        <Text style={styles.articleTitle}>ARTICLE 5 : PROPRIÉTÉ INTELLECTUELLE
+        </Text>
+        <Text style={styles.articleBody}>
+
+        Les marques, logos et contenus présents sur le site PCS AGRI, tels que les illustrations graphiques et les textes, bénéficient d'une protection en vertu du Code de la propriété intellectuelle et du droit d'auteur. Toute reproduction et copie de ces contenus par un utilisateur nécessitent une autorisation préalable de la part du site. Il est important de souligner que toute utilisation à des fins commerciales ou publicitaires est strictement interdite dans ce cas.
+
+</Text>
+
+
+
+        <Text style={styles.articleTitle}>
+        ARTICLE 6 : INFORMATIONS
+
+        </Text>
+        <Text style={styles.articleBody}>
+        Bien que les informations publiées sur le site soient réputées fiables, nous tenons à préciser que le site ne peut garantir formellement la fiabilité de toutes les sources. Les informations présentées sur le site PCS AGRI sont fournies à titre purement informatif et n'ont aucune valeur contractuelle. Malgré les mises à jour régulières, nous ne pouvons être tenus responsables des modifications ultérieures des dispositions administratives et juridiques une fois les informations publiées. De même, nous déclinons toute responsabilité quant à l'utilisation et à l'interprétation des informations fournies sur la plateforme. De plus, en cas de force majeure ou d'événements imprévisibles et insurmontables causés par un tiers, le site ne peut être tenu pour responsable. Cependant, nous nous engageons à mettre en œuvre toutes les méthodes nécessaires pour assurer la sécurité et la confidentialité des données au mieux. Nous tenons à souligner que l'utilisateur s'engage à ne pas tenter de compromettre la sécurité du site web en exploitant d'éventuelles vulnérabilités qui pourraient affecter sa confidentialité, son intégrité ou sa disponibilité. Enfin, nous informons les utilisateurs que toute intrusion ou tentative d'intrusion sur le site fera l'objet de poursuites légales conformément aux lois et réglementations en vigueur
+
+
+          
+        </Text>
+
+
+
+        <Text style={styles.articleTitle}>
+        ARTICLE 7 : LIENS HYPERTEXTES
+
+          </Text>
+          <Text style={styles.articleBody}>
+          Ce site peut inclure des liens web (URL) vers d’autres sites Internet qui échappent au contrôle de la société qui n’est, en aucun cas, responsable du contenu de ces sites, ne fait aucune déclaration concernant ces sites et n’approuve ni ne désapprouve nécessairement les informations, le matériel, les produits ou les services contenus sur ou accessibles via ces sites. L’utilisateur reconnaît et accepte que son lien vers d’autres sites, son utilisation de ces sites et son utilisation de toute information, matériel, produits et services offerts par ces sites, relèvent uniquement de sa responsabilité.
+
+
+            
+          </Text>
+
+
+
+
+
+          <Text style={styles.articleTitle}>
+          ARTICLE 8 : COOKIES
+
+          </Text>
+          <Text style={styles.articleBody}>
+          Lors des visites sur le site, un cookie peut être automatiquement installé sur le navigateur de l'utilisateur. Ces petits fichiers temporaires sont nécessaires pour assurer l'accessibilité et la navigation sur le site, mais ils ne contiennent aucune information personnelle identifiable. Les informations des cookies sont utilisées pour améliorer la navigation sur le site. En naviguant sur le site, l'utilisateur accepte l'utilisation des cookies, mais il peut les désactiver via les paramètres de son logiciel de navigation.
+
+
+            
+          </Text>
+
+
+
+
+          <Text style={styles.articleTitle}>
+          
+          </Text>
+          <Text style={styles.articleBody}>
+            
+            
+          </Text>
+
+
+
+
+          <Text style={styles.articleTitle}>
+          ARTICLE 9 : RESPONSABILITÉ
+
+          </Text>
+          <Text style={styles.articleBody}>
+          Ce site a pour but de présenter l'activité de PCS AGRI. Cependant, il est important de noter que les informations fournies sur ce site ne doivent pas être considérées comme un engagement ou une représentation précontractuelle des services de la société, ni comme une description d'une obligation de résultat de quelque manière que ce soit. La société décline toute responsabilité quant à la divulgation du contenu des correspondances des utilisateurs, que ce soit par courrier électronique ou tout autre moyen de communication utilisant Internet, qui pourraient être interceptées par des tiers en raison du mode de transmission des données sur le réseau. En outre, la société ne peut être tenue responsable des conséquences, qu'elles soient directes ou indirectes, résultant d'erreurs de saisie de coordonnées ou d'informations erronées ou incomplètes fournies par l'utilisateur via le site .
+
+
+            
+          </Text>
+
+
+
+
+          <Text style={styles.articleTitle}>
+          ARTICLE 10 : DURÉE DU CONTRAT
+
+          </Text>
+          <Text style={styles.articleBody}>
+          Le présent contrat est valable pour une durée indéterminée. Le début de l’utilisation des services du site marque l’application du contrat à l’égard de l’Utilisateur .
+
+
+            
+          </Text>
+
+
+
+
+
+          <Text style={styles.articleTitle}>
+          ARTICLE 11 : NON RENONCIATION
+
+          </Text>
+          <Text style={styles.articleBody}>
+          Le défaut de la société d’insister sur l’application stricte de toute disposition de cet accord ne doit pas être interprété comme une renonciation à toute disposition ou droit
+
+          Le présent Contrat est soumis au droit marocain. A défaut d’accord amiable, tout différent qui surviendrait à l’occasion de l’interprétation ou de l’exécution du présent Contrat relèvera de la compétence des tribunaux d'Agadir .
+
+
+            
+          </Text>
+
+
+
+
+
+
+
         
       </View>
 
 
-      <View style={{
-        backgroundColor :"rgb(180, 180, 180)", 
-        height : 1, 
-        width : "100%", 
-        marginBottom : 30, 
-        marginTop : 30
-      }}  />
-        <View style={styles.container}>
-        <Text style={styles.title}>
-        Politique de protection de données personnelles RGPD et Loi 09-08
-        </Text>
-
-        <Text style={styles.articleTitle}>Préambule :</Text>
-        <Text style={styles.articleBody}>
-        Le responsable de traitement, PCS AGRI, est une société à responsabilité limitée de droit marocain immatriculée au Registre du Commerce d'Agadir sous le numéro 51395, sise à APP N 15 LOT 29 CITE HAUT FOUNTY Agadir, Sous Massa, Maroc. (Ci-après dénommée « PCS AGRI » ou « nous »).
-        Afin de se conformer aux textes réglementaires et légaux et respecter les données personnelles de ses clients, PCS AGRI a mis en place une politique de confidentialité applicable aux données à caractère personnel collectées dans le cadre de ses « Gestion Clients » ou « Recrutement ».
-        </Text>
-
-        <Text style={styles.articleTitle}>La présente Politique :</Text>
-        <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp; 1. Couvre les collectes de données personnelles que nous collectons par l’intermédiaire de nos sites internet ou applications mobiles
-        </Text>
-        <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp; 2. Détaille la manière dont les informations recueillies via nos sites internet sont utilisées et protégées 
-        </Text>
-        <Text  style={styles.articleBody}>
-        &nbsp;&nbsp;&nbsp; 3. Donne des renseignements concernant vos droits d’accès, de rectification, de suppression ou d’opposition relatifs à vos données personnelles .
-        En utilisant un Site et/ou un Service, et en nous fournissant vos données personnelles, vous consentez au traitement de vos données personnelles de la manière décrite dans cette politique de confidentialité.
-        </Text>
-        
-         
-
-        <Text style={styles.articleTitle}>1 Les personnes concernées par la collecte des données personnelles :</Text>
-        <Text style={styles.articleBody}>
-            Dans le cadre de la fourniture de nos services, nous pouvons collecter des informations relatives aux personnes suivantes :
-            1. Les utilisateurs de nos sites internet et/ de nos applications,
-            2. Les candidats dans le cadre d’un recrutement
-            Ci-après collectivement désignées « vous », « votre » ou « vos ».
-        </Text>
-
-
-
-        <Text style={styles.articleTitle}>2 Les catégories de données personnelles que nous collectons et les finalités de la collecte : </Text>
-        <Text style={styles.articleBody}>
-        2.1 Finalités principales de traitements
-        </Text>
-
-        <Text>
-        1. Créer et administrer votre compte ;
-
-        </Text>
-
-        <Text>
-        2. Gérer votre candidature à une de nos offres d’emploi et évaluer votre aptitude au poste concerné (lors du recrutement).
-
-        </Text>
-
-        <Text>
-        2.2 Données que vous nous fournissez volontairement : Il s’agit de :
-        Finalité gestion clients :
-
-        </Text>
-
-        <Text>
-            Nom et prénom
-            / E-mail
-            / Numéro de téléphone
-            Finalité gestion des ressources humaines :
-            / Nom et prénom
-            / Titre
-            / Revenu
-            / CV
-            / adresse
-            / Numéro CIN
-            / Numéro du permis de conduire
-            / Type du permis de conduire
-            / Numéro Sécurité Sociale
-            / RIB
-            / Date et lieu de naissance
-            / Situation familiale
-            / Numéro de téléphone
-            / E-mail
-        </Text>
-
-        <Text>
-        2. 3 Données collectées automatiquement
-        </Text>
-
-        <Text>
-        Ces données peuvent inclure votre adresse IP, le type d'appareil, les détails du système d'exploitation, les numéros d'identification uniques (y compris les identifiants publicitaires mobiles), le type de navigateur, la langue du navigateur.
-        Finalités principales de traitement :
-        </Text>
-
-        <Text>
-        1. Amélioration de la qualité, la pertinence et la sécurité de nos Sites et Services afin d’offrir une expérience personnalisée aux utilisateurs de nos sites internet et services.
-
-        </Text>
-
-        <Text>
-        2. Blocage des adresses IP en cas de violation des Conditions d'utilisation de nos sites internet.
-
-        </Text>
-
-        <Text>
-        Ce traitement est autorisé par la CNDP sous le N° D-GC-1127/2023
-        </Text>
-
-             
-        
-
-
-
-        <Text style={styles.articleTitle}>4 Stockage de vos données personnelles :</Text>
-        <Text style={styles.articleBody}>
-        Vos données sont stockées chez l’hébergeur Microsft France en France
-        </Text>
-
-
-        <Text style={styles.articleTitle}>5 Partage et divulgation de vos données personnelles
-
-</Text>
-        <Text style={styles.articleBody}>
-        Nous pouvons être amenés à communiquer vos données personnelles, dans le cadre unique de pouvoir vous satisfaire lors de l’utilisation de nos Services, à des destinataires internes et/ou à des destinataires externes
-Destinataire internes :
-Il s’agit ici de tout le personnel interne amené à intervenir pour vous fournir les Services de PCS AGRI ou pour gérer votre compte tels que le service technique, le service administratif.
-Destinataire externe :
-L’entreprise en charge de la comptabilité.
-Conformément à nos instructions, nos fournisseurs et prestataires de services peuvent traiter ou stocker des données personnelles dans le cadre de l'exercice de leurs fonctions.
-Notez qu’à chaque fois que nous partageons des données personnelles, nous prenons toutes les mesures raisonnables pour nous assurer qu'elles sont traitées en toute sécurité et conformément à la présente Politique de confidentialité.
-        </Text>
-
-
-
-        <Text style={styles.articleTitle}>6 Conservation des données</Text>
-        <Text style={styles.articleBody}>
-        Nous stockons vos informations pour une durée proportionnée à l’objectif pour lequel nous les traitons dans le respect des limites imposées par les textes législatifs et réglementaires.
-        Par ailleurs, il est à noter que même après la fin de notre relation commerciale, il est possible que nous conservions certaines informations si nous en estimons un besoin légitime. Pour les candidats à l’embauche, leurs informations peuvent être conservées dans notre base de données pour une durée de 24 mois pour les contacter au sujet de futures opportunités, à moins les personnes concernées le refusent.
-        </Text>
-
-
-
-        <Text style={styles.articleTitle}>7 Personnes mineures</Text>
-        <Text style={styles.articleBody}>
-        En utilisant les sites internet et les services de PCS AGRI, vous nous garantissez être une personne majeure.
-        Si vous pensez que nous traitons des données de mineurs nous vous remercions de nous contacter via l’adresse dpo@pcs-agri.com.
-
-
-        </Text>
-
-
-
-        <Text style={styles.articleTitle}>8 Vos droits</Text>
-        <Text style={styles.articleBody}>
-        Conformément à la loi « Informatique et Libertés » du 6 janvier 1978 modifiée et du Règlement Général Sur la Protection des Données (2016/679) (le « RGPD ») et à la loi 09-08 relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel, vous disposez des droits suivants :
-        </Text>
-        <Text>
-        1. Le droit d'accès aux informations personnelles que nous détenons à votre sujet ;
-        </Text>
-        <Text>
-        2. Le droit de nous demander de mettre à jour ou de corriger toute information personnelle vous concernant ;
-        </Text>
-        <Text>
-        3. Le droit de demander une copie de vos données. Ces copies pourront être facturées ;
-        </Text>
-        <Text>
-        4. Le droit de retirer votre consentement au traitement de vos données personnelles à tout moment, lorsque ce traitement est fondé sur votre consentement ;
-        </Text>
-        <Text>
-        5. Le droit de vous opposer à la réception de communications commerciales et marketing ;
-        </Text>
-        <Text>
-        6. Le droit à l'effacement ;
-        </Text>
-        <Text>
-        7. Le droit à la limitation du traitement. Ici la limitation dépendra de la nature de la prestation que nous vous fournissons telle que celle de l’enregistrement des noms de domaine qui nécessite les données de contact physique ;
-        </Text>
-        <Text>
-        8. Le droit à la portabilité des données ;
-        </Text>
-        <Text>
-        9. Le droit de vous opposer au traitement des données personnelles vous concernant ;
-        </Text>
-        <Text>
-        10.Le droit de déposer une plainte auprès d'une autorité de régulation, à savoir au Maroc la CNDP.
-        Vous pouvez exercer ces droits en tout temps en nous envoyant un e-mail à dpo@pcs-agri.com.
-        </Text>
-
-
-
-        <Text style={styles.articleTitle}>9 Sécurité des données personnelles</Text>
-        <Text style={styles.articleBody}>
-        PCS Agri met en œuvre les moyens appropriés pour préserver la sécurité et la confidentialité des données, via des procédures physiques, administratives, techniques et organisationnelles de protection raisonnables et répondant aux plus hauts standards de sécurité. Ces procédures de protection varient en fonction de la sensibilité des informations que nous collectons, traitons et stockons et de l'état actuel de la technologie.
-        Par ailleurs, vous êtes seuls responsables de la sécurité et de la confidentialité des identifiants de connexion que vous avez créés ou reçu pour accéder à votre espace client.
-        </Text>
-
-
-
-        <Text style={styles.articleTitle}>10 Contact
-
-</Text>
-        <Text style={styles.articleBody}>
-        Si vous avez des questions ou réclamation à propos de la présente politique de confidentialité ou sur le traitement de vos données par PCS AGRI, vous pouvez contacter notre délégué à la protection des données par email à dpo@pcs-agri.com ou à l'adresse postale suivante : APP N 15 LOT 29 CITE HAUT FOUNTY Agadir, Sous-Massa, Maroc.
-        </Text>
-
-
- 
-
-
-
-
-         
-      </View>
+     
     </ScrollView>
   );
 }

@@ -105,9 +105,16 @@ export default function AjouterPersonnel() {
     const handleSubmit = async () => {
 
         if (!fullName && !email && !password) {
-            console.log("Enter Serre");
+            Alert.alert("Veuillez saisir toutes les informations..")
             return;
         }
+
+        if(password.length <= 8 ){
+            Alert.alert("Le mot de passe doit contenir au mois 8 caracteres");
+            return;
+        }
+
+        
 
         setisLoading(true);
         try{
